@@ -72,6 +72,11 @@
 
   details.ref { border:1px dashed var(--teal-line); border-radius:8px; padding:6px 12px; margin:8px 0; background:#FAFFFE; }
   details.ref summary { cursor:pointer; color:var(--teal); font-weight:700; font-size:14px; }
+  .final { border:2px solid var(--amber); background:var(--amber-bg); border-radius:10px; padding:12px 14px; margin:14px 0 4px; }
+  .final .h { font-weight:700; color:var(--amber); }
+  .final p { margin:4px 0; }
+  .final .frame { font-size:16px; background:#fff; border-radius:6px; padding:6px 10px; display:inline-block; }
+  .final textarea { margin-top:6px; }
   .ref .empty { color:var(--muted); font-size:14px; }
   .ref .said { white-space:pre-wrap; background:var(--teal-bg); border-radius:6px; padding:6px 10px; margin:4px 0; }
   .ref table { min-width:0; font-size:13px; }
@@ -136,7 +141,9 @@ const LESSONS = [
   { no: 1, tone: "teal", title: "사람이 만든 규칙으로 움직임 판단하기",
     question: "마이크로비트는 내가 걸었다는 것을 어떻게 알 수 있을까?",
     sections: [
-      { num: "①", title: "생각 열기", time: "5분", fields: [
+      { num: "①", title: "생각 열기 — 우리가 알아야 할 것", time: "5분", fields: [
+        { type: "text", id: "l1_know", rows: 3, label: "이 수업에서 우리가 알아야 할 것은 무엇일까요? 궁금한 것을 질문으로 2~3개 적어 봅시다." },
+        { type: "tip", text: "막막하다면 이런 쪽으로 생각해 보세요: 마이크로비트는 무엇을 잴까? · 걸음은 어떻게 셀까? · 인공지능은 여기서 무슨 일을 할까?" },
         { type: "text", id: "l1_think", rows: 3, label: "스마트폰 만보기는 내가 걸은 것을 어떻게 알아낼까요? 마이크로비트는 내 다리를 볼 수 있을까요? 내 생각을 적어 봅시다." },
       ] },
       { num: "②", title: "가속도 값 관찰하기", time: "10분",
@@ -240,29 +247,31 @@ const LESSONS = [
         { type: "text", id: "l3_c2", label: "2. 두 활동에서 모은 데이터는 무엇인가요?" },
         { type: "text", id: "l3_c3", rows: 3, label: "3. 가속도센서는 인공지능인가요? 그렇게 생각한 까닭을 적어 봅시다." },
       ] },
-      { num: "②", title: "두 활동의 차이점", time: "12분", fields: [
+      { num: "②", title: "두 활동의 차이점", time: "10분", fields: [
         { type: "ref", title: "📋 2차시에 내가 쓴 차이 다시 보기", show: ["l2_diff", "l2_why"], open: true },
         { type: "table", id: "l3_cmp", cols: [{ h: "비교 항목" }, { h: "1차시: 가속도센서 프로그램" }, { h: "2차시: CreateAI" }],
           rows: [["사용한 센서", null, null], ["입력 데이터", null, null], ["판단 기준을 만드는 방법", null, null],
                  ["사람이 직접 정한 것", null, null], ["결과를 판단하는 방법", null, null],
                  ["틀렸을 때 고치는 방법", null, null], ["새 동작을 추가하는 방법", null, null]] },
       ] },
-      { num: "③", title: "생각을 넓히는 질문", time: "10분", fields: [
+      { num: "③", title: "생각을 넓히는 질문", time: "8분", fields: [
         { type: "text", id: "l3_q1", label: "1. 1차시 프로그램에서 '걷기'의 기준은 누가 정했나요?" },
         { type: "text", id: "l3_q2", label: "2. 2차시 CreateAI에서 동작을 구분하는 기준은 어떻게 만들어졌나요?" },
         { type: "text", id: "l3_q3", label: "3. AI 모델에 한 사람의 걷기 데이터만 넣으면 어떤 문제가 생길 수 있나요?" },
         { type: "text", id: "l3_q4", label: "4. CreateAI가 뛰기를 걷기로 잘못 판단했다면 어떤 데이터를 더 넣어야 하나요?" },
         { type: "text", id: "l3_q5", rows: 3, label: "5. 규칙으로 판단하는 방법과 AI로 판단하는 방법 중 언제나 더 정확한 쪽이 있나요? 까닭도 적어 봅시다." },
       ] },
-      { num: "④", title: "나의 최종 발견", time: "3분", fields: [
-        { type: "fill", id: "l3_find", title: "💡 빈칸을 채워 문장을 완성해 봅시다", lines: [
-          ["두 활동은 모두 ", { k: "a" }, " 센서를 사용한다."],
-          ["1차시 프로그램은 사람이 정한 ", { k: "b" }, "에 따라 동작을 판단한다."],
-          ["CreateAI는 여러 동작의 ", { k: "c" }, "를 학습하여 동작을 분류한다."],
-          ["따라서 센서가 인공지능으로 바뀐 것이 아니라, 센서 데이터를 ", { k: "d" }, "하는 방법에 인공지능이 사용된 것이다."],
-        ] },
+      { num: "④", title: "나의 최종 발견", time: "8분", highlight: true, fields: [
+        { type: "ref", title: "📋 1차시 처음에 내가 적은 '알아야 할 것'", show: ["l1_know"], open: true },
+        { type: "text", id: "l3_learned", rows: 2, label: "처음 질문 가운데 이제 알게 된 것은 무엇인가요?" },
+        { type: "text", id: "l3_unknown", rows: 2, label: "아직 모르거나 더 알고 싶은 것은 무엇인가요?" },
+        { type: "final", id: "l3_final",
+          head: "🎯 마지막 질문",
+          text: "만보기 프로그램과 인공지능 프로그램은 똑같은 가속도센서 값을 받았는데도 움직임을 판단하는 모습이 달랐어요. 무엇이 같고 무엇이 달라서 그랬을까요?",
+          frame: "“두 프로그램은 ________은(는) 같지만, ________이(가) 다르다.”",
+          hint: "이 틀에 맞춰 나만의 한 문장으로 써 보세요. 1·2차시 실험에서 본 것을 근거로 떠올려 보세요." },
       ] },
-      { num: "⑤", title: "나만의 동작 인식 인공지능 계획하기", time: "15분",
+      { num: "⑤", title: "나만의 동작 인식 인공지능 계획하기", time: "14분",
         intro: "오늘 알게 된 것을 바탕으로, 생활 속 문제를 동작 인식 인공지능으로 해결하는 계획을 세워 봅시다. 만들기는 다음 시간에 해요.",
         callout: { tone: "amber", head: "📌 프로젝트 조건", lines: [
           "① 서로 구분할 동작을 2~4개 정한다. ② 동작마다 비슷한 횟수로 데이터를 모은다.",
@@ -311,7 +320,7 @@ LESSONS.forEach((L) => L.sections.forEach((S) => S.fields.forEach((F) => { if (F
 function slotsOf(L) {
   const out = [];
   L.sections.forEach((S) => S.fields.forEach((F) => {
-    if (F.type === "text") out.push({ k: F.id, need: !F.optional, where: `${S.num} ${S.title}` });
+    if (F.type === "text" || F.type === "final") out.push({ k: F.id, need: !F.optional, where: `${S.num} ${S.title}` });
     if (F.type === "table") F.rows.forEach((r, ri) => r.forEach((v, ci) => {
       if (v === null) out.push({ k: `${F.id}:${ri}:${ci}`, need: !F.cols[ci].optional, where: `${S.num} ${S.title}` });
     }));
@@ -340,6 +349,9 @@ function fieldHTML(F) {
     typeof p === "string" ? esc(p) : `<input type="text" data-k="${F.id}:${p.k}" placeholder="${esc(p.ph || "")}" aria-label="빈칸">`).join("")}</p>`).join("")}</div>`;
   if (F.type === "checks") return `<p class="q" style="font-weight:700;margin:8px 0 4px">${esc(F.label)}</p><div class="checks">${F.items.map((it, i) =>
     `<label><input type="checkbox" data-k="${F.id}:${i}"><span>${esc(it)}</span></label>`).join("")}</div>`;
+  if (F.type === "final") return `<div class="final"><div class="h">${esc(F.head)}</div><p><b>${esc(F.text)}</b></p>
+    <p class="frame">${esc(F.frame)}</p><p class="tip">${esc(F.hint)}</p>
+    <textarea id="${F.id}" data-k="${F.id}" rows="3" aria-label="마지막 질문에 대한 나의 문장"></textarea></div>`;
   if (F.type === "ref") return `<details class="ref" data-ref="${F.show.join(",")}"${F.open ? " open" : ""}><summary>${esc(F.title)}</summary><div class="ref-body"></div></details>`;
   return "";
 }
@@ -434,6 +446,7 @@ function lessonText(L) {
     out.push("", `${S.num} ${S.title}`, "-".repeat(30));
     S.fields.forEach((F) => {
       if (F.type === "text") out.push(`Q. ${F.label}`, `A. ${(A[F.id] || "").trim() || "(빈칸)"}`, "");
+      if (F.type === "final") out.push(`[마지막 질문] ${F.text}`, `틀: ${F.frame}`, `A. ${(A[F.id] || "").trim() || "(빈칸)"}`, "");
       if (F.type === "table") {
         if (F.label) out.push(F.label);
         out.push(`[${F.cols.map((c) => c.h).join(" | ")}]`);
