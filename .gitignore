@@ -1,0 +1,7 @@
+# 공개 저장소(GitHub Pages)에는 학생이 봐도 되는 파일만 올린다.
+# 교사용 답이 들어 있는 파일(교사용 학습지, build_worksheet.js, DEVLOG.md, worksheets.html)은 이 PC에만 둔다.
+*
+!.gitignore
+!index.html
+!README.md
+!마이크로비트_AI_학습지_학생용.pdf

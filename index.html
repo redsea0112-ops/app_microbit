@@ -1,0 +1,559 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>마이크로비트 AI 탐구</title>
+<link rel="icon" href="data:,">
+<style>
+  :root {
+    --teal:#0F766E; --teal-bg:#E6F4F1; --teal-line:#99D5CB;
+    --amber:#B45309; --amber-bg:#FEF3C7; --amber-line:#FCD38D;
+    --slate:#334155; --muted:#64748B; --line:#E2E8F0; --bg:#F8FAFC; --card:#fff; --field:#fff;
+  }
+  * { box-sizing:border-box; }
+  body { margin:0; font-family:"맑은 고딕","Malgun Gothic",system-ui,sans-serif; color:var(--slate); background:var(--bg); line-height:1.6; }
+  .wrap { max-width:960px; margin:0 auto; padding:0 16px; }
+  header.top { background:var(--card); border-bottom:1px solid var(--line); position:sticky; top:0; z-index:5; }
+  .top-row { display:flex; flex-wrap:wrap; gap:8px 16px; align-items:center; justify-content:space-between; padding:10px 0 6px; }
+  .brand b { font-size:17px; }
+  .brand span { color:var(--muted); font-size:13px; margin-left:6px; }
+  .who { display:flex; gap:8px; align-items:center; flex-wrap:wrap; font-size:14px; }
+  .who input[type=text] { width:110px; }
+  @media (max-width:640px) { header.top { position:static; } }
+  .tabs { display:flex; gap:4px; overflow-x:auto; padding-bottom:0; }
+  .tab { flex:0 0 auto; border:1px solid var(--line); border-bottom:none; background:var(--bg); color:var(--muted);
+         padding:8px 14px; border-radius:8px 8px 0 0; font:inherit; font-size:14px; cursor:pointer; }
+  .tab[aria-selected="true"] { background:var(--teal); color:#fff; border-color:var(--teal); font-weight:700; }
+  .tab .st { font-size:12px; margin-left:4px; }
+  main { padding:16px 0 80px; }
+
+  .band { display:flex; border-radius:10px; overflow:hidden; margin-bottom:12px; }
+  .band .lbl { background:var(--teal); color:#fff; font-weight:700; padding:10px 16px; display:flex; align-items:center; }
+  .band .ttl { background:var(--teal-bg); color:var(--teal); font-weight:700; font-size:19px; padding:10px 16px; flex:1; }
+  .band.amber .lbl { background:var(--amber); } .band.amber .ttl { background:var(--amber-bg); color:var(--amber); }
+  .callout { border-left:4px solid var(--teal); background:var(--teal-bg); border-radius:6px; padding:10px 14px; margin:10px 0; }
+  .callout.amber { border-color:var(--amber); background:var(--amber-bg); }
+  .callout .h { font-weight:700; color:var(--teal); font-size:14px; }
+  .callout.amber .h { color:var(--amber); }
+  .callout p { margin:2px 0; }
+
+  section.act { background:var(--card); border:1px solid var(--line); border-radius:10px; padding:14px 16px; margin:14px 0; }
+  section.act > h3 { margin:0 0 8px; font-size:17px; border-bottom:2px solid var(--teal-line); padding-bottom:6px; }
+  section.act > h3 .n { color:var(--teal); margin-right:6px; }
+  section.act > h3 .t { color:var(--muted); font-weight:400; font-size:13px; margin-left:8px; }
+  section.act.new { border-color:var(--amber-line); }
+  .intro { margin:4px 0 8px; }
+  .tip { color:var(--amber); font-size:14px; margin:2px 0; }
+  .tip::before { content:"💡 "; }
+  .warn { color:var(--amber); font-weight:700; }
+
+  label.q { display:block; font-weight:700; margin:12px 0 4px; }
+  label.q .opt { color:var(--muted); font-weight:400; font-size:13px; }
+  textarea, input[type=text], select { font:inherit; font-size:15px; color:var(--slate); background:var(--field);
+    border:1px solid #CBD5E1; border-radius:6px; padding:6px 8px; width:100%; }
+  textarea { resize:vertical; min-height:44px; }
+  textarea:focus, input:focus, select:focus { outline:2px solid var(--teal); outline-offset:0; border-color:var(--teal); }
+  .blank { border-color:var(--amber) !important; background:#FFFBEB; }
+
+  .tbl { overflow-x:auto; margin:6px 0; }
+  table { border-collapse:collapse; width:100%; min-width:520px; font-size:14px; }
+  th, td { border:1px solid var(--line); padding:4px 6px; vertical-align:middle; }
+  th { background:#F1F5F9; font-weight:700; text-align:center; }
+  td.fx { background:#F8FAFC; font-weight:700; white-space:nowrap; }
+  td textarea { border-color:transparent; min-height:36px; padding:4px; }
+  td textarea:hover { border-color:#CBD5E1; }
+  td select { border-color:#E2E8F0; }
+
+  .fill p { margin:6px 0; line-height:2.2; }
+  .fill input { width:auto; display:inline-block; min-width:9em; padding:2px 6px; border-width:0 0 2px; border-radius:0; border-color:var(--teal); background:transparent; }
+  .checks label { display:flex; gap:8px; align-items:flex-start; margin:4px 0; cursor:pointer; }
+  .checks input { margin-top:5px; width:18px; height:18px; accent-color:var(--teal); }
+
+  details.ref { border:1px dashed var(--teal-line); border-radius:8px; padding:6px 12px; margin:8px 0; background:#FAFFFE; }
+  details.ref summary { cursor:pointer; color:var(--teal); font-weight:700; font-size:14px; }
+  .ref .empty { color:var(--muted); font-size:14px; }
+  .ref .said { white-space:pre-wrap; background:var(--teal-bg); border-radius:6px; padding:6px 10px; margin:4px 0; }
+  .ref table { min-width:0; font-size:13px; }
+
+  .submit { background:var(--card); border:2px solid var(--teal); border-radius:10px; padding:14px 16px; margin-top:20px; }
+  .submit h3 { margin:0 0 4px; font-size:16px; }
+  .submit .state { font-size:14px; color:var(--muted); margin:0 0 10px; }
+  .btn { font:inherit; font-size:15px; border-radius:8px; padding:9px 16px; cursor:pointer; border:1px solid var(--teal); background:#fff; color:var(--teal); }
+  .btn.primary { background:var(--teal); color:#fff; font-weight:700; }
+  .btn.amber { border-color:var(--amber); color:var(--amber); }
+  .btn.small { font-size:13px; padding:5px 10px; }
+  .row { display:flex; gap:8px; flex-wrap:wrap; align-items:center; }
+
+  .bubble { position:relative; border-radius:10px; padding:10px 14px; margin:10px 0; font-size:14px; animation:pop .25s ease-out; }
+  .bubble::before { content:""; position:absolute; top:-8px; left:24px; border:8px solid transparent; border-top:0; border-bottom-color:inherit; }
+  .bubble.amber { background:var(--amber-bg); border:1px solid var(--amber-line); border-bottom-color:var(--amber-bg); }
+  .bubble.amber { border-bottom:1px solid var(--amber-line); }
+  .bubble.teal { background:var(--teal-bg); border:1px solid var(--teal-line); }
+  .bubble.slate { background:#F1F5F9; border:1px solid var(--line); }
+  .bubble ul { margin:4px 0 0; padding-left:20px; }
+  @keyframes pop { from { transform:scale(.96); opacity:0; } to { transform:none; opacity:1; } }
+  @media (prefers-reduced-motion: reduce) { .bubble { animation:none; } }
+
+  footer { color:var(--muted); font-size:13px; padding:20px 0 40px; border-top:1px solid var(--line); }
+  footer a { color:var(--teal); }
+  .sr { position:absolute; left:-9999px; }
+</style>
+</head>
+<body>
+<header class="top"><div class="wrap">
+  <div class="top-row">
+    <div class="brand"><b>마이크로비트는 움직임을 어떻게 알아낼까?</b><span>정보 · 인공지능 탐구</span></div>
+    <div class="who">
+      <label for="sid">학번</label><input id="sid" type="text" inputmode="numeric" autocomplete="off" placeholder="예: 20315">
+      <label for="sname">이름</label><input id="sname" type="text" autocomplete="off" placeholder="이름">
+      <button class="btn small" id="loadBtn" type="button">📂 지난 제출 파일 불러오기</button>
+      <input id="loadFile" class="sr" type="file" accept=".txt,.json,text/plain" multiple>
+    </div>
+  </div>
+  <nav class="tabs" role="tablist" id="tabs"></nav>
+</div></header>
+
+<main><div class="wrap">
+  <div id="topMsg"></div>
+  <div id="pages"></div>
+  <footer>
+    제출을 누르면 <b>학번_이름_N차시.txt</b> 파일이 내려받아져요. 선생님이 알려 준 곳에 그 파일을 올리면 제출 끝!<br>
+    이 앱은 내가 쓴 내용을 어디에도 저장하지 않아요. 다음 시간에 이어 쓰려면 <b>📂 지난 제출 파일 불러오기</b>로 내 파일을 다시 여세요.<br>
+    <a href="마이크로비트_AI_학습지_학생용.pdf" target="_blank" rel="noopener">인쇄용 학습지(PDF) 보기</a>
+    <span id="teacherLink" hidden> · 선생님용: <a href="worksheets.html">학생용·교사용 학습지 보기</a></span>
+  </footer>
+</div></main>
+
+<script>
+// ─────────────────────────────────────────────
+// 차시 내용. 인쇄용 학습지(build_worksheet.js)와 같은 내용이다.
+//  필드 종류: text(서술) · table(표) · fill(빈칸 문장) · checks(체크 목록) · ref(내 기록 다시 보기)
+//  table의 rows에서 문자열은 고정 칸, null은 학생이 쓰는 칸이다.
+//  optional: true → 비어 있어도 "빈칸"으로 세지 않는다.
+// ─────────────────────────────────────────────
+const LESSONS = [
+  { no: 1, tone: "teal", title: "사람이 만든 규칙으로 움직임 판단하기",
+    question: "마이크로비트는 내가 걸었다는 것을 어떻게 알 수 있을까?",
+    sections: [
+      { num: "①", title: "생각 열기", time: "5분", fields: [
+        { type: "text", id: "l1_think", rows: 3, label: "스마트폰 만보기는 내가 걸은 것을 어떻게 알아낼까요? 마이크로비트는 내 다리를 볼 수 있을까요? 내 생각을 적어 봅시다." },
+      ] },
+      { num: "②", title: "가속도 값 관찰하기", time: "10분",
+        intro: "MakeCode의 <b>[가속도(mg) 크기]</b> 값을 화면에 띄우고, 동작마다 값이 어떻게 달라지는지 적어 봅시다.",
+        tips: [
+          "가만히 있어도 약 1000 정도가 나와요. 지구가 당기는 힘(중력)도 함께 재기 때문이에요.",
+          "LED에 숫자가 흘러가서 읽기 어렵다면? USB로 연결하고 [시리얼] 분류의 '값 출력' 블록으로 가속도 크기를 보내세요. MakeCode에서 마이크로비트를 연결한 뒤 시뮬레이터 아래의 '데이터 표시 장치 구성' 단추를 누르면 실제 기기 값이 그래프로 보여요. ('데이터 표시 시뮬레이터'는 가짜 값이라 쓰지 않아요.)",
+        ],
+        fields: [
+          { type: "table", id: "l1_obs", cols: [{ h: "동작" }, { h: "값의 범위 (대략)" }, { h: "값이 어떻게 변했나요?" }],
+            rows: [["정지", null, null], ["걷기", null, null], ["뛰기", null, null], ["손으로 흔들기", null, null]] },
+        ] },
+      { num: "③", title: "판단 규칙 만들기", time: "15분", fields: [
+        { type: "table", id: "l1_ipo", cols: [{ h: "구분" }, { h: "하는 일" }, { h: "사용한 블록" }],
+          rows: [
+            ["입력", "가속도센서에서 움직임 값을 잰다", null],
+            ["처리", "값이 내가 정한 기준보다 큰지 비교한다", null],
+            ["출력", "기준을 넘으면 걸음 수를 1 늘린다", null],
+            ["표시", "A 버튼을 누르면 지금까지 걸음 수를 보여 준다", null],
+          ] },
+        { type: "fill", id: "l1_rule", title: "✏️ 내가 정한 규칙",
+          lines: [["만약 가속도 크기가 ", { k: "v", ph: "기준값" }, " 보다 크면 걸음 수를 1 증가시킨다."]] },
+        { type: "tip", text: "10걸음인데 수십 걸음으로 세어지나요? 한 걸음 동안 값이 기준을 넘어 있는 사이에 반복하기가 여러 번 돌아서 그래요. 걸음 수를 1 늘린 바로 뒤에 [일시중지 (ms) 300] 블록을 넣어 보세요." },
+        { type: "table", id: "l1_try", label: "기준값을 바꾸어 가며 10걸음을 걸어 보고 결과를 적어 봅시다.",
+          cols: [{ h: "시도" }, { h: "기준값" }, { h: "10걸음 측정 결과" }, { h: "알게 된 점" }],
+          rows: [["1번째", null, null, null], ["2번째", null, null, null], ["3번째", null, null, null]] },
+      ] },
+      { num: "④", title: "실험하기", time: "10분",
+        intro: "가장 잘 맞았던 기준값으로 여러 동작을 10번씩 해 봅시다. 마이크로비트를 차는 위치도 바꿔 보세요.",
+        fields: [
+          { type: "table", id: "l1_exp",
+            cols: [{ h: "실험 동작" }, { h: "실제 횟수" }, { h: "측정값" }, { h: "정확했나요?", options: ["○", "✕"] }, { h: "틀렸다면 까닭은?", optional: true }],
+            rows: [["천천히 걷기", "10회", null, null, null], ["빠르게 걷기", "10회", null, null, null],
+                   ["제자리 뛰기", "10회", null, null, null], ["손으로 흔들기", "10회", null, null, null]] },
+        ] },
+      { num: "⑤", title: "정리하기", time: "5분", fields: [
+        { type: "text", id: "l1_s1", label: "1. 걸음 수를 판단하는 기준값은 누가 정했나요?" },
+        { type: "text", id: "l1_s2", label: "2. 손으로 마이크로비트를 흔들었는데 걸음 수가 늘어난 까닭은 무엇인가요?" },
+        { type: "text", id: "l1_s3", label: "3. 친구가 같은 프로그램을 쓰면 결과가 달라질 수 있는 까닭은 무엇인가요?" },
+        { type: "text", id: "l1_s4", label: "4. 조건을 하나 더 추가한다면 어떤 조건을 넣고 싶나요?" },
+      ] },
+    ] },
+
+  { no: 2, tone: "amber", title: "인공지능이 데이터에서 동작의 특징 찾기",
+    question: "기준값을 내가 직접 정하지 않아도 마이크로비트가 동작을 구분할 수 있을까?",
+    sections: [
+      { num: "①", title: "1차시 돌아보기", time: "5분", fields: [
+        { type: "text", id: "l2_back", rows: 3, label: "1차시 프로그램이 틀리게 판단한 경우를 하나 적어 봅시다. 왜 틀렸을까요?" },
+      ] },
+      { num: "②", title: "데이터 모으기", time: "12분",
+        intro: "CreateAI에서 동작마다 이름표(분류 이름)를 만들고 데이터를 모읍니다. 동작마다 모은 수가 너무 차이 나지 않게 하세요.",
+        fields: [
+          { type: "table", id: "l2_data",
+            cols: [{ h: "분류 이름" }, { h: "동작 방법" }, { h: "목표" }, { h: "실제로 모은 수" }, { h: "다양하게 만든 방법" }],
+            rows: [["정지", "마이크로비트를 들고 가만히 있기", "5회 이상", null, null],
+                   ["걷기", "일정한 속도로 걷기", "5회 이상", null, null],
+                   ["뛰기", "제자리에서 가볍게 뛰기", "5회 이상", null, null]] },
+        ] },
+      { num: "③", title: "모델 학습하고 시험하기", time: "13분",
+        intro: "모델을 학습시킨 뒤 동작을 바꾸어 가며 결과를 확인합니다. <span class='warn'>틀린 결과도 지우지 말고 그대로 적으세요.</span>",
+        fields: [
+          { type: "table", id: "l2_test",
+            cols: [{ h: "실제로 한 동작" }, { h: "AI가 판단한 동작" }, { h: "결과", options: ["성공", "실패"] }, { h: "틀렸다면 예상 원인", optional: true }],
+            rows: [["정지", null, null, null], ["천천히 걷기", null, null, null], ["빠르게 걷기", null, null, null],
+                   ["제자리 뛰기", null, null, null], ["손 흔들기", null, null, null], ["다른 친구가 걷기", null, null, null]] },
+        ] },
+      { num: "④", title: "모델 고치기", time: "5분", fields: [
+        { type: "checks", id: "l2_fix", label: "잘 구분하지 못했다면 필요한 방법을 골라 봅시다.", items: [
+          "그 동작의 데이터를 더 모은다.",
+          "한 가지 방식으로만 모은 데이터를 다양하게 만든다 (속도·방향·사람 바꾸기).",
+          "동작 사이의 차이가 분명하게 나도록 동작 방법을 바꾼다.",
+          "잘못 모은 데이터를 찾아 지우고 다시 모은다.",
+          "동작마다 데이터 수를 비슷하게 맞춘다.",
+        ] },
+        { type: "text", id: "l2_fixres", rows: 3, label: "해 본 방법과 그 결과를 적어 봅시다." },
+      ] },
+      { num: "⑤", title: "프로그램에 연결하기", time: "5분",
+        intro: "MakeCode에서 AI가 판단한 결과에 따라 마이크로비트가 무엇을 보여 줄지 정해 봅시다.",
+        fields: [
+          { type: "table", id: "l2_out", cols: [{ h: "AI 판단 결과" }, { h: "보여 줄 것 (아이콘·글자·소리)" }, { h: "그렇게 정한 까닭" }],
+            rows: [["정지", null, null], ["걷기", null, null], ["뛰기", null, null]] },
+        ] },
+      { num: "⑥", title: "2차시 마무리 — 내가 발견한 차이", time: "5분", highlight: true,
+        callout: { tone: "amber", head: "🔎 스스로 정리하기", lines: [
+          "1차시에는 가속도센서 값과 <b>내가 정한 기준값</b>으로 판단했고, 오늘은 <b>인공지능에 데이터를 학습시켜</b> 판단했어요.",
+          "두 방법은 무엇이 달랐나요? 정답은 없어요. 오늘 직접 해 본 것을 떠올리며 내 말로 써 보세요.",
+        ] },
+        fields: [
+          { type: "ref", title: "📋 내 기록 다시 보기 (1차시 실험 · 2차시 시험 결과)", show: ["l1_rule", "l1_exp", "l2_test"] },
+          { type: "text", id: "l2_diff", rows: 5, label: "인공지능으로 학습시킨 프로그램과 가속도센서 값만 쓴 프로그램은 무엇이 달랐나요?" },
+          { type: "text", id: "l2_why", rows: 3, label: "그렇게 생각한 근거는 무엇인가요? 1·2차시에 내가 적은 실험 결과에서 찾아 적어 보세요." },
+          { type: "text", id: "l2_wonder", rows: 2, optional: true, label: "아직 궁금하거나 헷갈리는 점이 있다면 적어 보세요." },
+        ] },
+    ] },
+
+  { no: 3, tone: "teal", title: "비교하고 나만의 프로젝트 계획하기",
+    question: "같은 가속도센서를 쓰는데, 두 프로그램은 무엇이 다를까?",
+    sections: [
+      { num: "①", title: "두 활동의 공통점", time: "5분", fields: [
+        { type: "text", id: "l3_c1", label: "1. 두 활동에서 사용한 입력 장치는 무엇인가요?" },
+        { type: "text", id: "l3_c2", label: "2. 두 활동에서 모은 데이터는 무엇인가요?" },
+        { type: "text", id: "l3_c3", rows: 3, label: "3. 가속도센서는 인공지능인가요? 그렇게 생각한 까닭을 적어 봅시다." },
+      ] },
+      { num: "②", title: "두 활동의 차이점", time: "12분", fields: [
+        { type: "ref", title: "📋 2차시에 내가 쓴 차이 다시 보기", show: ["l2_diff", "l2_why"], open: true },
+        { type: "table", id: "l3_cmp", cols: [{ h: "비교 항목" }, { h: "1차시: 가속도센서 프로그램" }, { h: "2차시: CreateAI" }],
+          rows: [["사용한 센서", null, null], ["입력 데이터", null, null], ["판단 기준을 만드는 방법", null, null],
+                 ["사람이 직접 정한 것", null, null], ["결과를 판단하는 방법", null, null],
+                 ["틀렸을 때 고치는 방법", null, null], ["새 동작을 추가하는 방법", null, null]] },
+      ] },
+      { num: "③", title: "생각을 넓히는 질문", time: "10분", fields: [
+        { type: "text", id: "l3_q1", label: "1. 1차시 프로그램에서 '걷기'의 기준은 누가 정했나요?" },
+        { type: "text", id: "l3_q2", label: "2. 2차시 CreateAI에서 동작을 구분하는 기준은 어떻게 만들어졌나요?" },
+        { type: "text", id: "l3_q3", label: "3. AI 모델에 한 사람의 걷기 데이터만 넣으면 어떤 문제가 생길 수 있나요?" },
+        { type: "text", id: "l3_q4", label: "4. CreateAI가 뛰기를 걷기로 잘못 판단했다면 어떤 데이터를 더 넣어야 하나요?" },
+        { type: "text", id: "l3_q5", rows: 3, label: "5. 규칙으로 판단하는 방법과 AI로 판단하는 방법 중 언제나 더 정확한 쪽이 있나요? 까닭도 적어 봅시다." },
+      ] },
+      { num: "④", title: "나의 최종 발견", time: "3분", fields: [
+        { type: "fill", id: "l3_find", title: "💡 빈칸을 채워 문장을 완성해 봅시다", lines: [
+          ["두 활동은 모두 ", { k: "a" }, " 센서를 사용한다."],
+          ["1차시 프로그램은 사람이 정한 ", { k: "b" }, "에 따라 동작을 판단한다."],
+          ["CreateAI는 여러 동작의 ", { k: "c" }, "를 학습하여 동작을 분류한다."],
+          ["따라서 센서가 인공지능으로 바뀐 것이 아니라, 센서 데이터를 ", { k: "d" }, "하는 방법에 인공지능이 사용된 것이다."],
+        ] },
+      ] },
+      { num: "⑤", title: "나만의 동작 인식 인공지능 계획하기", time: "15분",
+        intro: "오늘 알게 된 것을 바탕으로, 생활 속 문제를 동작 인식 인공지능으로 해결하는 계획을 세워 봅시다. 만들기는 다음 시간에 해요.",
+        callout: { tone: "amber", head: "📌 프로젝트 조건", lines: [
+          "① 서로 구분할 동작을 2~4개 정한다. ② 동작마다 비슷한 횟수로 데이터를 모은다.",
+          "③ 속도·방향·사람을 바꾸어 다양하게 모은다. ④ 모델을 시험하고 틀린 사례를 기록한다.",
+          "⑤ 데이터를 더하거나 고쳐 모델을 개선한다. ⑥ 결과에 따라 소리·아이콘·숫자 중 하나를 출력한다.",
+          "<span style='color:var(--muted)'>아이디어 예시: 운동 도우미(걷기·뛰기·정지) · 수업 참여 도우미(손들기·박수·가만히) · 자세 알림 · 체육 타이머(준비·운동·휴식) · 몸으로 푸는 O·X 퀴즈</span>",
+        ] },
+        fields: [
+          { type: "table", id: "l3_plan", cols: [{ h: "항목" }, { h: "작성 내용" }],
+            rows: [["해결하고 싶은 문제", null], ["이 문제를 고른 까닭", null], ["구분할 동작 (2~4개)", null],
+                   ["필요한 입력 장치", "가속도센서"], ["동작별 데이터 모으는 방법", null], ["데이터를 다양하게 만드는 방법", null],
+                   ["AI 결과에 따른 출력", null], ["예상되는 오류", null], ["모델을 개선하는 방법", null]] },
+        ] },
+    ] },
+
+  { no: 4, tone: "amber", tab: "후속", title: "프로젝트를 마치고 스스로 점검하기",
+    question: "나의 동작 인식 인공지능은 문제를 잘 해결했을까?",
+    sections: [
+      { num: "✅", title: "스스로 점검하기", time: "", fields: [
+        { type: "table", id: "l4_self", cols: [{ h: "점검 내용" }, { h: "나의 점검", options: ["잘함", "보통", "노력"] }],
+          rows: [["입력–처리–출력 과정을 설명할 수 있다.", null],
+                 ["규칙으로 판단하기와 학습으로 판단하기의 차이를 설명할 수 있다.", null],
+                 ["동작별 데이터를 고르고 다양하게 모았다.", null],
+                 ["모델이 틀린 것을 찾아 데이터를 더해 고쳤다.", null],
+                 ["생활 속 문제와 동작 인식 기능이 자연스럽게 이어진다.", null]] },
+        { type: "text", id: "l4_good", rows: 3, label: "내 프로젝트에서 가장 잘된 점과 아쉬운 점을 적어 봅시다." },
+      ] },
+    ] },
+];
+
+const APP = "microbit-ai-lesson";
+const MARK = "----- 불러오기용 데이터 (지우지 마세요) -----";
+const A = {};                 // 답: 평평한 키 → 값
+const submitted = {};         // 차시 번호 → 제출 시각
+const dirty = {};             // 차시 번호 → 제출 뒤 고쳤는지
+let current = 1;
+
+const $ = (s, el = document) => el.querySelector(s);
+const esc = (s) => String(s ?? "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+const strip = (html) => String(html).replace(/<[^>]+>/g, "");
+const tabName = (L) => L.tab || `${L.no}차시`;
+const fieldById = {};
+LESSONS.forEach((L) => L.sections.forEach((S) => S.fields.forEach((F) => { if (F.id) fieldById[F.id] = { F, L }; })));
+
+// 차시마다 학생이 채워야 하는 칸 목록
+function slotsOf(L) {
+  const out = [];
+  L.sections.forEach((S) => S.fields.forEach((F) => {
+    if (F.type === "text") out.push({ k: F.id, need: !F.optional, where: `${S.num} ${S.title}` });
+    if (F.type === "table") F.rows.forEach((r, ri) => r.forEach((v, ci) => {
+      if (v === null) out.push({ k: `${F.id}:${ri}:${ci}`, need: !F.cols[ci].optional, where: `${S.num} ${S.title}` });
+    }));
+    if (F.type === "fill") F.lines.forEach((ln) => ln.forEach((p) => { if (typeof p === "object") out.push({ k: `${F.id}:${p.k}`, need: true, where: `${S.num} ${S.title}` }); }));
+    if (F.type === "checks") F.items.forEach((_, i) => out.push({ k: `${F.id}:${i}`, need: false }));
+  }));
+  return out;
+}
+
+// ───────── 화면 그리기 ─────────
+function fieldHTML(F) {
+  if (F.type === "tip") return `<p class="tip">${esc(F.text)}</p>`;
+  if (F.type === "text") return `<label class="q" for="${F.id}">${esc(F.label)}${F.optional ? ' <span class="opt">(쓰고 싶으면)</span>' : ""}</label>
+    <textarea id="${F.id}" data-k="${F.id}" rows="${F.rows || 2}"></textarea>`;
+  if (F.type === "table") {
+    const head = F.cols.map((c) => `<th>${esc(c.h)}${c.optional ? '<br><span style="font-weight:400;font-size:12px;color:var(--muted)">(틀렸을 때만)</span>' : ""}</th>`).join("");
+    const body = F.rows.map((r, ri) => `<tr>${r.map((v, ci) => {
+      if (v !== null) return `<td class="${ci === 0 ? "fx" : ""}">${esc(v)}</td>`;
+      const k = `${F.id}:${ri}:${ci}`, c = F.cols[ci], name = `${r[0]} — ${c.h}`;
+      if (c.options) return `<td><select data-k="${k}" aria-label="${esc(name)}"><option value="">고르기</option>${c.options.map((o) => `<option>${esc(o)}</option>`).join("")}</select></td>`;
+      return `<td><textarea data-k="${k}" rows="1" aria-label="${esc(name)}"></textarea></td>`;
+    }).join("")}</tr>`).join("");
+    return `${F.label ? `<p class="intro">${esc(F.label)}</p>` : ""}<div class="tbl"><table><thead><tr>${head}</tr></thead><tbody>${body}</tbody></table></div>`;
+  }
+  if (F.type === "fill") return `<div class="callout amber fill"><div class="h">${esc(F.title)}</div>${F.lines.map((ln) => `<p>${ln.map((p) =>
+    typeof p === "string" ? esc(p) : `<input type="text" data-k="${F.id}:${p.k}" placeholder="${esc(p.ph || "")}" aria-label="빈칸">`).join("")}</p>`).join("")}</div>`;
+  if (F.type === "checks") return `<p class="q" style="font-weight:700;margin:8px 0 4px">${esc(F.label)}</p><div class="checks">${F.items.map((it, i) =>
+    `<label><input type="checkbox" data-k="${F.id}:${i}"><span>${esc(it)}</span></label>`).join("")}</div>`;
+  if (F.type === "ref") return `<details class="ref" data-ref="${F.show.join(",")}"${F.open ? " open" : ""}><summary>${esc(F.title)}</summary><div class="ref-body"></div></details>`;
+  return "";
+}
+
+function pageHTML(L) {
+  return `<div class="page" id="page${L.no}" role="tabpanel" hidden>
+    <div class="band ${L.tone}"><div class="lbl">${esc(tabName(L))}</div><div class="ttl">${esc(L.title)}</div></div>
+    <div class="callout ${L.tone === "amber" ? "amber" : ""}"><div class="h">🔎 핵심 질문</div><p>${esc(L.question)}</p></div>
+    ${L.sections.map((S) => `<section class="act${S.highlight ? " new" : ""}">
+      <h3><span class="n">${S.num}</span>${esc(S.title)}${S.time ? `<span class="t">${S.time}</span>` : ""}</h3>
+      ${S.intro ? `<p class="intro">${S.intro}</p>` : ""}
+      ${(S.tips || []).map((t) => `<p class="tip">${esc(t)}</p>`).join("")}
+      ${S.callout ? `<div class="callout ${S.callout.tone}"><div class="h">${S.callout.head}</div>${S.callout.lines.map((l) => `<p>${l}</p>`).join("")}</div>` : ""}
+      ${S.fields.map(fieldHTML).join("")}
+    </section>`).join("")}
+    <div class="submit" id="submit${L.no}">
+      <h3>📤 ${esc(tabName(L))} 제출하기</h3>
+      <p class="state" id="state${L.no}"></p>
+      <div class="row"><button class="btn primary" type="button" data-submit="${L.no}">${esc(tabName(L))} 제출 파일 내려받기</button></div>
+      <div id="msg${L.no}"></div>
+    </div>
+  </div>`;
+}
+
+function renderTabs() {
+  $("#tabs").innerHTML = LESSONS.map((L) => {
+    const st = submitted[L.no] ? (dirty[L.no] ? '<span class="st">● 다시 제출</span>' : '<span class="st">✓ 제출</span>') : "";
+    return `<button class="tab" role="tab" type="button" data-tab="${L.no}" aria-selected="${L.no === current}">${esc(tabName(L))}${st}</button>`;
+  }).join("");
+}
+
+function renderState(no) {
+  const el = $(`#state${no}`); if (!el) return;
+  const L = LESSONS.find((x) => x.no === no);
+  const miss = slotsOf(L).filter((s) => s.need && !filled(A[s.k])).length;
+  const sub = submitted[no] ? `제출함 (${submitted[no]})${dirty[no] ? " · <b style='color:var(--amber)'>제출 뒤에 고친 내용이 있어요. 다시 제출해 주세요.</b>" : ""}` : "아직 제출하지 않았어요.";
+  el.innerHTML = `${sub} · 남은 빈칸 <b>${miss}</b>개`;
+}
+
+function renderRefs() {
+  document.querySelectorAll("details.ref").forEach((d) => {
+    const parts = d.dataset.ref.split(",").map((id) => refPart(id)).filter(Boolean);
+    $(".ref-body", d).innerHTML = parts.length ? parts.join("")
+      : `<p class="empty">아직 적은 내용이 없어요. 지난 시간에 낸 파일을 <b>📂 지난 제출 파일 불러오기</b>로 열면 여기에 보여요.</p>`;
+  });
+}
+function refPart(id) {
+  const { F, L } = fieldById[id];
+  if (F.type === "text") return filled(A[id]) ? `<p style="margin:6px 0 0;font-size:13px;color:var(--muted)">${tabName(L)} · ${esc(F.label)}</p><div class="said">${esc(A[id])}</div>` : "";
+  if (F.type === "fill") {
+    const vals = F.lines.flat().filter((p) => typeof p === "object").map((p) => A[`${id}:${p.k}`]);
+    if (!vals.some(filled)) return "";
+    return `<p style="margin:6px 0 0;font-size:13px;color:var(--muted)">${tabName(L)} · 내가 정한 규칙</p><div class="said">${esc(fillText(F))}</div>`;
+  }
+  if (F.type === "table") {
+    const any = F.rows.some((r, ri) => r.some((v, ci) => v === null && filled(A[`${id}:${ri}:${ci}`])));
+    if (!any) return "";
+    const head = F.cols.map((c) => `<th>${esc(c.h)}</th>`).join("");
+    const body = F.rows.map((r, ri) => `<tr>${r.map((v, ci) => `<td>${esc(v !== null ? v : A[`${id}:${ri}:${ci}`] || "")}</td>`).join("")}</tr>`).join("");
+    const sec = L.sections.find((S) => S.fields.includes(F));
+    return `<p style="margin:8px 0 2px;font-size:13px;color:var(--muted)">${tabName(L)} ${sec.num} ${esc(sec.title)}</p><div class="tbl"><table><thead><tr>${head}</tr></thead><tbody>${body}</tbody></table></div>`;
+  }
+  return "";
+}
+
+function show(no) {
+  current = no;
+  document.querySelectorAll(".page").forEach((p) => (p.hidden = p.id !== `page${no}`));
+  renderTabs(); renderRefs(); renderState(no);
+  $("#topMsg").innerHTML = "";
+  window.scrollTo({ top: 0 });
+}
+
+function fillInputs() {
+  document.querySelectorAll("[data-k]").forEach((el) => {
+    const v = A[el.dataset.k];
+    if (el.type === "checkbox") el.checked = !!v; else el.value = v ?? "";
+    if (el.tagName === "TEXTAREA") grow(el);
+  });
+}
+function grow(el) { if (el.closest("td")) { el.style.height = "auto"; el.style.height = el.scrollHeight + 2 + "px"; } }
+const filled = (v) => v === true || (typeof v === "string" && v.trim() !== "");
+const lessonOfKey = (k) => fieldById[k.split(":")[0]]?.L.no;
+
+// ───────── 제출 파일 ─────────
+function fillText(F) {
+  return F.lines.map((ln) => ln.map((p) => typeof p === "string" ? p : `[${(A[`${F.id}:${p.k}`] || "").trim() || "    "}]`).join("")).join("\n");
+}
+function lessonText(L) {
+  const out = [];
+  L.sections.forEach((S) => {
+    out.push("", `${S.num} ${S.title}`, "-".repeat(30));
+    S.fields.forEach((F) => {
+      if (F.type === "text") out.push(`Q. ${F.label}`, `A. ${(A[F.id] || "").trim() || "(빈칸)"}`, "");
+      if (F.type === "table") {
+        if (F.label) out.push(F.label);
+        out.push(`[${F.cols.map((c) => c.h).join(" | ")}]`);
+        F.rows.forEach((r, ri) => out.push(r.map((v, ci) => v !== null ? v : ((A[`${F.id}:${ri}:${ci}`] || "").trim().replace(/\s*\n\s*/g, " ") || "(빈칸)")).join(" | ")));
+        out.push("");
+      }
+      if (F.type === "fill") out.push(F.title.replace(/^\S+\s/, ""), fillText(F), "");
+      if (F.type === "checks") { out.push(F.label); F.items.forEach((it, i) => out.push(`${A[`${F.id}:${i}`] ? "[✓]" : "[ ]"} ${it}`)); out.push(""); }
+    });
+  });
+  return out.join("\n");
+}
+
+function submit(no) {
+  const L = LESSONS.find((x) => x.no === no);
+  const msg = $(`#msg${no}`);
+  const sid = $("#sid").value.trim(), name = $("#sname").value.trim();
+  if (!sid || !name) {
+    msg.innerHTML = bubble("amber", `제출 파일 이름에 들어가야 해서 <b>${!sid && !name ? "학번과 이름" : !sid ? "학번" : "이름"}</b>이 필요해요. 맨 위 칸에 먼저 적어 주세요.`);
+    (sid ? $("#sname") : $("#sid")).focus();
+    return;
+  }
+  const missing = slotsOf(L).filter((s) => s.need && !filled(A[s.k]));
+  markBlanks(L, missing);
+  if (missing.length && !msg.dataset.confirm) {
+    const where = [...new Set(missing.map((m) => m.where))];
+    msg.dataset.confirm = "1";
+    msg.innerHTML = bubble("amber", `아직 빈칸이 <b>${missing.length}개</b> 있어요. 노란 칸을 채우면 더 좋아요.<ul>${where.map((w) => `<li>${esc(w)}</li>`).join("")}</ul>
+      <div class="row" style="margin-top:8px"><button class="btn small" type="button" data-goblank="${no}">첫 빈칸으로 가기</button>
+      <button class="btn small amber" type="button" data-submit="${no}">그래도 지금 제출하기</button></div>`);
+    return;
+  }
+  delete msg.dataset.confirm;
+  try {
+    const now = new Date();
+    const stamp = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")} ${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}`;
+    const mine = {};
+    Object.keys(A).forEach((k) => { if (lessonOfKey(k) === no && (filled(A[k]) || A[k] === false)) mine[k] = A[k]; });
+    const text = [
+      `[마이크로비트 AI 탐구] ${tabName(L)} — ${L.title}`,
+      `학번: ${sid}    이름: ${name}`,
+      `제출 시각: ${stamp}    빈칸: ${missing.length}개`,
+      "=".repeat(40),
+      lessonText(L),
+      "", "", MARK,
+      JSON.stringify({ app: APP, v: 1, lesson: no, sid, name, at: stamp, answers: mine }),
+    ].join("\n");
+    const file = `${sid}_${name}_${tabName(L)}.txt`.replace(/[\\/:*?"<>|\s]+/g, "_");
+    const url = URL.createObjectURL(new Blob(["﻿" + text], { type: "text/plain;charset=utf-8" }));
+    const a = Object.assign(document.createElement("a"), { href: url, download: file });
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 2000);
+    submitted[no] = stamp.slice(11); dirty[no] = false;
+    msg.innerHTML = bubble("teal", `✓ <b>${esc(file)}</b> 파일을 내려받았어요. 선생님이 알려 준 곳에 이 파일을 올려 주세요.<br>다음 시간에 이어 쓰려면 이 파일을 <b>📂 지난 제출 파일 불러오기</b>로 다시 열면 돼요.`);
+    renderTabs(); renderState(no);
+  } catch (e) {
+    console.error(e);
+    msg.innerHTML = bubble("amber", "파일을 만들지 못했어요. 브라우저가 내려받기를 막았을 수 있어요. 다른 브라우저(크롬·엣지)로 다시 해 보거나 선생님께 알려 주세요.");
+  }
+}
+
+function markBlanks(L, missing) {
+  const miss = new Set(missing.map((m) => m.k));
+  $(`#page${L.no}`).querySelectorAll("[data-k]").forEach((el) => el.classList.toggle("blank", miss.has(el.dataset.k)));
+}
+
+// ───────── 지난 파일 불러오기 ─────────
+async function loadFiles(files) {
+  const ok = [], bad = [];
+  for (const f of files) {
+    try {
+      const text = await f.text();
+      const i = text.indexOf(MARK);
+      const data = JSON.parse(i >= 0 ? text.slice(i + MARK.length).trim() : text);
+      if (data.app !== APP || !data.answers) throw new Error("다른 앱의 파일");
+      Object.assign(A, data.answers);
+      if (!$("#sid").value && data.sid) $("#sid").value = data.sid;
+      if (!$("#sname").value && data.name) $("#sname").value = data.name;
+      const L = LESSONS.find((x) => x.no === data.lesson);
+      ok.push(L ? tabName(L) : f.name);
+    } catch (e) {
+      console.error(e);
+      bad.push(f.name);
+    }
+  }
+  fillInputs(); renderRefs(); LESSONS.forEach((L) => renderState(L.no));
+  $("#topMsg").innerHTML =
+    (ok.length ? bubble("teal", `📂 <b>${esc(ok.join(", "))}</b> 내용을 불러왔어요. 이어서 쓰면 돼요.`) : "") +
+    (bad.length ? bubble("amber", `<b>${esc(bad.join(", "))}</b>은(는) 이 앱에서 제출한 파일이 아니거나 내용이 바뀌어서 읽지 못했어요. 제출할 때 받은 .txt 파일 그대로 골라 주세요.`) : "");
+}
+
+const bubble = (tone, html) => `<div class="bubble ${tone}" role="status">${html}</div>`;
+
+// ───────── 시작 ─────────
+if (["localhost", "127.0.0.1", ""].includes(location.hostname)) $("#teacherLink").hidden = false;
+$("#pages").innerHTML = LESSONS.map(pageHTML).join("");
+show(1);
+
+document.addEventListener("input", (e) => {
+  const k = e.target.dataset?.k; if (!k) return;
+  A[k] = e.target.type === "checkbox" ? e.target.checked : e.target.value;
+  e.target.classList.remove("blank");
+  if (e.target.tagName === "TEXTAREA") grow(e.target);
+  const no = lessonOfKey(k);
+  if (submitted[no] && !dirty[no]) { dirty[no] = true; renderTabs(); }
+  delete $(`#msg${no}`).dataset.confirm; // 고쳤으면 제출 전에 빈칸을 다시 알려 준다
+  renderState(no);
+});
+document.addEventListener("click", (e) => {
+  const t = e.target.closest("[data-tab],[data-submit],[data-goblank]"); if (!t) return;
+  if (t.dataset.tab) show(Number(t.dataset.tab));
+  if (t.dataset.submit) { if (t.closest(".bubble")) $(`#msg${t.dataset.submit}`).dataset.confirm = "1"; submit(Number(t.dataset.submit)); }
+  if (t.dataset.goblank) { const el = $(`#page${t.dataset.goblank} .blank`); if (el) { el.scrollIntoView({ behavior: "smooth", block: "center" }); el.focus({ preventScroll: true }); } }
+});
+$("#loadBtn").addEventListener("click", () => $("#loadFile").click());
+$("#loadFile").addEventListener("change", (e) => { if (e.target.files.length) loadFiles([...e.target.files]); e.target.value = ""; });
+window.addEventListener("beforeunload", (e) => {
+  const unsaved = LESSONS.some((L) => (!submitted[L.no] || dirty[L.no]) && slotsOf(L).some((s) => filled(A[s.k])));
+  if (unsaved) { e.preventDefault(); e.returnValue = ""; }
+});
+</script>
+</body>
+</html>
