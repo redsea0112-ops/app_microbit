@@ -218,20 +218,22 @@ const LESSONS = [
       ] },
       { num: "②", title: "데이터 모으기", time: "12분",
         intro: "CreateAI에서 동작마다 이름표(분류 이름)를 만들고 데이터를 모읍니다. 동작마다 모은 수가 너무 차이 나지 않게 하세요.",
+        tips: ["마이크로비트는 모든 동작에서 같은 손으로, 같은 방향으로 쥐어요. 쥐는 법이 바뀌면 인공지능이 헷갈려요."],
         fields: [
           { type: "table", id: "l2_data",
             cols: [{ h: "분류 이름" }, { h: "동작 방법" }, { h: "목표" }, { h: "실제로 모은 수" }, { h: "다양하게 만든 방법" }],
-            rows: [["정지", "마이크로비트를 들고 가만히 있기", "5회 이상", null, null],
-                   ["걷기", "일정한 속도로 걷기", "5회 이상", null, null],
-                   ["뛰기", "제자리에서 가볍게 뛰기", "5회 이상", null, null]] },
+            rows: [["박수치기", "마이크로비트를 쥔 채로 박수치기", "5회 이상", null, null],
+                   ["손 흔들기", "마이크로비트를 쥔 손을 좌우로 흔들기", "5회 이상", null, null],
+                   ["가만히 있기", "마이크로비트를 쥐고 가만히 있기", "5회 이상", null, null]] },
         ] },
       { num: "③", title: "모델 학습하고 시험하기", time: "13분",
         intro: "모델을 학습시킨 뒤 동작을 바꾸어 가며 결과를 확인합니다. <span class='warn'>틀린 결과도 지우지 말고 그대로 적으세요.</span>",
         fields: [
-          { type: "table", id: "l2_test",
+          { type: "table", id: "l2_test2",
             cols: [{ h: "실제로 한 동작" }, { h: "AI가 판단한 동작" }, { h: "결과", options: ["성공", "실패"] }, { h: "틀렸다면 예상 원인", optional: true }],
-            rows: [["정지", null, null, null], ["천천히 걷기", null, null, null], ["빠르게 걷기", null, null, null],
-                   ["제자리 뛰기", null, null, null], ["손 흔들기", null, null, null], ["다른 친구가 걷기", null, null, null]] },
+            rows: [["가만히 있기", null, null, null], ["천천히 박수치기", null, null, null], ["빠르게 박수치기", null, null, null],
+                   ["크게 손 흔들기", null, null, null], ["작게 손 흔들기", null, null, null], ["다른 친구가 박수치기", null, null, null],
+                   ["걷기 (배운 적 없는 동작)", null, null, null]] },
         ] },
       { num: "④", title: "모델 고치기", time: "5분", fields: [
         { type: "checks", id: "l2_fix", label: "잘 구분하지 못했다면 필요한 방법을 골라 봅시다.", items: [
@@ -247,7 +249,7 @@ const LESSONS = [
         intro: "MakeCode에서 AI가 판단한 결과에 따라 마이크로비트가 무엇을 보여 줄지 정해 봅시다.",
         fields: [
           { type: "table", id: "l2_out", cols: [{ h: "AI 판단 결과" }, { h: "보여 줄 것 (아이콘·글자·소리)" }, { h: "그렇게 정한 까닭" }],
-            rows: [["정지", null, null], ["걷기", null, null], ["뛰기", null, null]] },
+            rows: [["박수치기", null, null], ["손 흔들기", null, null], ["가만히 있기", null, null]] },
           { type: "image", id: "l2_code", optional: true, label: "📸 MakeCode 프로그램 캡처 붙이기",
             hint: "AI 판단 결과에 따라 출력하도록 만든 블록을 캡처해 붙여 보세요." },
         ] },
@@ -257,7 +259,7 @@ const LESSONS = [
           "두 방법은 무엇이 달랐나요? 정답은 없어요. 오늘 직접 해 본 것을 떠올리며 내 말로 써 보세요.",
         ] },
         fields: [
-          { type: "ref", title: "📋 내 기록 다시 보기 (1차시 실험 · 2차시 시험 결과)", show: ["l1_rule", "l1_exp", "l2_test"] },
+          { type: "ref", title: "📋 내 기록 다시 보기 (1차시 실험 · 2차시 시험 결과)", show: ["l1_rule", "l1_exp", "l2_test2"] },
           { type: "text", id: "l2_diff", rows: 5, label: "인공지능으로 학습시킨 프로그램과 가속도센서 값만 쓴 프로그램은 무엇이 달랐나요?" },
           { type: "text", id: "l2_why", rows: 3, label: "그렇게 생각한 근거는 무엇인가요? 1·2차시에 내가 적은 실험 결과에서 찾아 적어 보세요." },
           { type: "text", id: "l2_wonder", rows: 2, optional: true, label: "아직 궁금하거나 헷갈리는 점이 있다면 적어 보세요." },
@@ -282,8 +284,8 @@ const LESSONS = [
       { num: "③", title: "생각을 넓히는 질문", time: "8분", fields: [
         { type: "text", id: "l3_q1", label: "1. 1차시 프로그램에서 '걷기'의 기준은 누가 정했나요?" },
         { type: "text", id: "l3_q2", label: "2. 2차시 CreateAI에서 동작을 구분하는 기준은 어떻게 만들어졌나요?" },
-        { type: "text", id: "l3_q3", label: "3. AI 모델에 한 사람의 걷기 데이터만 넣으면 어떤 문제가 생길 수 있나요?" },
-        { type: "text", id: "l3_q4", label: "4. CreateAI가 뛰기를 걷기로 잘못 판단했다면 어떤 데이터를 더 넣어야 하나요?" },
+        { type: "text", id: "l3_q3", label: "3. AI 모델에 한 사람의 박수치기 데이터만 넣으면 어떤 문제가 생길 수 있나요?" },
+        { type: "text", id: "l3_q4", label: "4. CreateAI가 손 흔들기를 박수치기로 잘못 판단했다면 어떤 데이터를 더 넣어야 하나요?" },
         { type: "text", id: "l3_q5", rows: 3, label: "5. 규칙으로 판단하는 방법과 AI로 판단하는 방법 중 언제나 더 정확한 쪽이 있나요? 까닭도 적어 봅시다." },
       ] },
       { num: "④", title: "나의 최종 발견", time: "8분", highlight: true, fields: [
