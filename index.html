@@ -100,6 +100,26 @@
   @keyframes pop { from { transform:scale(.96); opacity:0; } to { transform:none; opacity:1; } }
   @media (prefers-reduced-motion: reduce) { .bubble { animation:none; } }
 
+  .imgbox { margin:12px 0; }
+  .drop { border:2px dashed var(--teal-line); border-radius:10px; background:#FAFFFE; color:var(--teal); text-align:center;
+          padding:18px 12px; cursor:pointer; font-size:14px; }
+  .drop:focus { outline:3px solid var(--teal); background:var(--teal-bg); }
+  .drop.over { background:var(--teal-bg); border-color:var(--teal); }
+  .drop small { display:block; color:var(--muted); margin-top:4px; }
+  .shot { display:block; max-width:100%; border:1px solid var(--line); border-radius:8px; margin:8px 0; }
+  .imgbox.blank .drop { border-color:var(--amber); background:#FFFBEB; }
+  .rp-wrap { position:fixed; left:-10000px; top:0; }
+  .rp { width:794px; background:#fff; color:#1e293b; font-family:"맑은 고딕","Malgun Gothic",sans-serif; font-size:14px; line-height:1.6; }
+  .rp-block { padding:14px 40px; }
+  .rp h1 { font-size:20px; margin:0 0 4px; }
+  .rp .meta { color:#475569; font-size:13px; border-bottom:2px solid #0F766E; padding-bottom:8px; }
+  .rp h2 { font-size:16px; margin:0 0 6px; color:#0F766E; border-bottom:1px solid #99D5CB; padding-bottom:4px; }
+  .rp .qq { font-weight:700; margin:8px 0 2px; }
+  .rp .aa { background:#F8FAFC; border:1px solid #E2E8F0; border-radius:6px; padding:6px 10px; white-space:pre-wrap; min-height:30px; }
+  .rp .none { color:#B45309; }
+  .rp table { min-width:0; width:100%; font-size:13px; }
+  .rp td { white-space:pre-wrap; }
+  .rp img { max-width:100%; border:1px solid #E2E8F0; }
   footer { color:var(--muted); font-size:13px; padding:20px 0 40px; border-top:1px solid var(--line); }
   footer a { color:var(--teal); }
   .sr { position:absolute; left:-9999px; }
@@ -113,7 +133,7 @@
       <label for="sid">학번</label><input id="sid" type="text" inputmode="numeric" autocomplete="off" placeholder="예: 20315">
       <label for="sname">이름</label><input id="sname" type="text" autocomplete="off" placeholder="이름">
       <button class="btn small" id="loadBtn" type="button">📂 지난 제출 파일 불러오기</button>
-      <input id="loadFile" class="sr" type="file" accept=".txt,.json,text/plain" multiple>
+      <input id="loadFile" class="sr" type="file" accept=".pdf,application/pdf,.txt" multiple>
     </div>
   </div>
   <nav class="tabs" role="tablist" id="tabs"></nav>
@@ -123,8 +143,8 @@
   <div id="topMsg"></div>
   <div id="pages"></div>
   <footer>
-    제출을 누르면 <b>학번_이름_N차시.txt</b> 파일이 내려받아져요. 선생님이 알려 준 곳에 그 파일을 올리면 제출 끝!<br>
-    이 앱은 내가 쓴 내용을 어디에도 저장하지 않아요. 다음 시간에 이어 쓰려면 <b>📂 지난 제출 파일 불러오기</b>로 내 파일을 다시 여세요.<br>
+    제출을 누르면 <b>학번_이름_N차시.pdf</b> 파일이 내려받아져요. 선생님이 알려 준 곳에 그 PDF를 올리면 제출 끝!<br>
+    이 앱은 내가 쓴 내용을 어디에도 저장하지 않아요. 다음 시간에 이어 쓰려면 <b>📂 지난 제출 파일 불러오기</b>로 내가 낸 PDF를 다시 여세요.<br>
     <a href="마이크로비트_AI_학습지_학생용.pdf" target="_blank" rel="noopener">인쇄용 학습지(PDF) 보기</a>
     <span id="teacherLink" hidden> · 선생님용: <a href="worksheets.html">학생용·교사용 학습지 보기</a></span>
   </footer>
@@ -157,13 +177,15 @@ const LESSONS = [
             rows: [["정지", null, null], ["걷기", null, null], ["뛰기", null, null], ["손으로 흔들기", null, null]] },
         ] },
       { num: "③", title: "판단 규칙 만들기", time: "15분", fields: [
-        { type: "table", id: "l1_ipo", cols: [{ h: "구분" }, { h: "하는 일" }, { h: "사용한 블록" }],
+        { type: "table", id: "l1_ipo", cols: [{ h: "구분" }, { h: "하는 일" }, { h: "사용한 블록", orImage: "l1_code" }],
           rows: [
             ["입력", "가속도센서에서 움직임 값을 잰다", null],
             ["처리", "값이 내가 정한 기준보다 큰지 비교한다", null],
             ["출력", "기준을 넘으면 걸음 수를 1 늘린다", null],
             ["표시", "A 버튼을 누르면 지금까지 걸음 수를 보여 준다", null],
           ] },
+        { type: "image", id: "l1_code", label: "📸 내 프로그램 캡처 붙이기",
+          hint: "MakeCode에서 만든 블록을 캡처해 붙이면 위 '사용한 블록' 칸은 비워도 돼요." },
         { type: "fill", id: "l1_rule", title: "✏️ 내가 정한 규칙",
           lines: [["만약 가속도 크기가 ", { k: "v", ph: "기준값" }, " 보다 크면 걸음 수를 1 증가시킨다."]] },
         { type: "tip", text: "10걸음인데 수십 걸음으로 세어지나요? 한 걸음 동안 값이 기준을 넘어 있는 사이에 반복하기가 여러 번 돌아서 그래요. 걸음 수를 1 늘린 바로 뒤에 [일시중지 (ms) 300] 블록을 넣어 보세요." },
@@ -226,6 +248,8 @@ const LESSONS = [
         fields: [
           { type: "table", id: "l2_out", cols: [{ h: "AI 판단 결과" }, { h: "보여 줄 것 (아이콘·글자·소리)" }, { h: "그렇게 정한 까닭" }],
             rows: [["정지", null, null], ["걷기", null, null], ["뛰기", null, null]] },
+          { type: "image", id: "l2_code", optional: true, label: "📸 MakeCode 프로그램 캡처 붙이기",
+            hint: "AI 판단 결과에 따라 출력하도록 만든 블록을 캡처해 붙여 보세요." },
         ] },
       { num: "⑥", title: "2차시 마무리 — 내가 발견한 차이", time: "5분", highlight: true,
         callout: { tone: "amber", head: "🔎 스스로 정리하기", lines: [
@@ -326,10 +350,12 @@ function slotsOf(L) {
   L.sections.forEach((S) => S.fields.forEach((F) => {
     if (F.type === "text" || F.type === "final") out.push({ k: F.id, need: !F.optional, where: `${S.num} ${S.title}` });
     if (F.type === "table") F.rows.forEach((r, ri) => r.forEach((v, ci) => {
-      if (v === null) out.push({ k: `${F.id}:${ri}:${ci}`, need: !F.cols[ci].optional, where: `${S.num} ${S.title}` });
+      const c = F.cols[ci];
+      if (v === null) out.push({ k: `${F.id}:${ri}:${ci}`, need: !c.optional && !(c.orImage && filled(A[c.orImage])), where: `${S.num} ${S.title}` });
     }));
     if (F.type === "fill") F.lines.forEach((ln) => ln.forEach((p) => { if (typeof p === "object") out.push({ k: `${F.id}:${p.k}`, need: true, where: `${S.num} ${S.title}` }); }));
     if (F.type === "checks") F.items.forEach((_, i) => out.push({ k: `${F.id}:${i}`, need: false }));
+    if (F.type === "image") out.push({ k: F.id, need: false });
   }));
   return out;
 }
@@ -340,7 +366,7 @@ function fieldHTML(F) {
   if (F.type === "text") return `<label class="q" for="${F.id}">${esc(F.label)}${F.optional ? ' <span class="opt">(쓰고 싶으면)</span>' : ""}</label>
     <textarea id="${F.id}" data-k="${F.id}" rows="${F.rows || 2}"></textarea>`;
   if (F.type === "table") {
-    const head = F.cols.map((c) => `<th>${esc(c.h)}${c.optional ? '<br><span style="font-weight:400;font-size:12px;color:var(--muted)">(틀렸을 때만)</span>' : ""}</th>`).join("");
+    const head = F.cols.map((c) => `<th>${esc(c.h)}${c.optional ? '<br><span style="font-weight:400;font-size:12px;color:var(--muted)">(틀렸을 때만)</span>' : ""}${c.orImage ? '<br><span style="font-weight:400;font-size:12px;color:var(--muted)">(아래에 캡처를 붙였으면 비워도 돼요)</span>' : ""}</th>`).join("");
     const body = F.rows.map((r, ri) => `<tr>${r.map((v, ci) => {
       if (v !== null) return `<td class="${ci === 0 ? "fx" : ""}">${esc(v)}</td>`;
       const k = `${F.id}:${ri}:${ci}`, c = F.cols[ci], name = `${r[0]} — ${c.h}`;
@@ -356,6 +382,17 @@ function fieldHTML(F) {
   if (F.type === "final") return `<div class="final"><div class="h">${esc(F.head)}</div><p><b>${esc(F.text)}</b></p>
     <p class="frame">${esc(F.frame)}</p><p class="tip">${esc(F.hint)}</p>
     <textarea id="${F.id}" data-k="${F.id}" rows="3" aria-label="마지막 질문에 대한 나의 문장"></textarea></div>`;
+  if (F.type === "image") return `<div class="imgbox" id="box_${F.id}">
+    <p class="q" style="font-weight:700;margin:8px 0 4px">${esc(F.label)}${F.optional ? ' <span style="font-weight:400;color:var(--muted);font-size:13px">(하고 싶으면)</span>' : ""}</p>
+    ${F.hint ? `<p class="tip">${esc(F.hint)}</p>` : ""}
+    <div class="drop" tabindex="0" role="button" data-drop="${F.id}" aria-label="${esc(F.label)} — 누른 뒤 Ctrl+V로 붙여 넣기">
+      📋 여기를 한 번 누르고 <b>Ctrl + V</b>로 붙여 넣기
+      <small>캡처는 Win + Shift + S · 그림 파일을 끌어다 놓아도 돼요</small></div>
+    <div class="row" style="margin-top:6px"><button class="btn small" type="button" data-pick="${F.id}">🖼 그림 파일 고르기</button>
+      <button class="btn small amber" type="button" data-clear="${F.id}" hidden>지우기</button></div>
+    <input type="file" accept="image/*" data-file="${F.id}" class="sr" tabindex="-1">
+    <img class="shot" id="img_${F.id}" alt="${esc(F.label)}" hidden>
+    <div id="imsg_${F.id}"></div></div>`;
   if (F.type === "ref") return `<details class="ref" data-ref="${F.show.join(",")}"${F.open ? " open" : ""}><summary>${esc(F.title)}</summary><div class="ref-body"></div></details>`;
   return "";
 }
@@ -374,7 +411,7 @@ function pageHTML(L) {
     <div class="submit" id="submit${L.no}">
       <h3>📤 ${esc(tabName(L))} 제출하기</h3>
       <p class="state" id="state${L.no}"></p>
-      <div class="row"><button class="btn primary" type="button" data-submit="${L.no}">${esc(tabName(L))} 제출 파일 내려받기</button></div>
+      <div class="row"><button class="btn primary" type="button" data-submit="${L.no}">📄 ${esc(tabName(L))} 제출 PDF 만들기</button></div>
       <div id="msg${L.no}"></div>
     </div>
   </div>`;
@@ -435,6 +472,7 @@ function fillInputs() {
     if (el.type === "checkbox") el.checked = !!v; else el.value = v ?? "";
     if (el.tagName === "TEXTAREA") grow(el);
   });
+  document.querySelectorAll("[data-drop]").forEach((d) => showImage(d.dataset.drop));
 }
 function grow(el) { if (el.closest("td")) { el.style.height = "auto"; el.style.height = el.scrollHeight + 2 + "px"; } }
 const filled = (v) => v === true || (typeof v === "string" && v.trim() !== "");
@@ -484,37 +522,162 @@ function submit(no) {
     return;
   }
   delete msg.dataset.confirm;
-  try {
-    const now = new Date();
-    const stamp = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")} ${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}`;
-    const mine = {};
-    Object.keys(A).forEach((k) => { if (lessonOfKey(k) === no && (filled(A[k]) || A[k] === false)) mine[k] = A[k]; });
-    const text = [
-      `[마이크로비트 AI 탐구] ${tabName(L)} — ${L.title}`,
-      `학번: ${sid}    이름: ${name}`,
-      `제출 시각: ${stamp}    빈칸: ${missing.length}개`,
-      "=".repeat(40),
-      lessonText(L),
-      "", "", MARK,
-      JSON.stringify({ app: APP, v: 1, lesson: no, sid, name, at: stamp, answers: mine }),
-    ].join("\n");
-    const file = `${sid}_${name}_${tabName(L)}.txt`.replace(/[\\/:*?"<>|\s]+/g, "_");
-    const url = URL.createObjectURL(new Blob(["﻿" + text], { type: "text/plain;charset=utf-8" }));
-    const a = Object.assign(document.createElement("a"), { href: url, download: file });
-    document.body.appendChild(a); a.click(); a.remove();
-    setTimeout(() => URL.revokeObjectURL(url), 2000);
-    submitted[no] = stamp.slice(11); dirty[no] = false;
-    msg.innerHTML = bubble("teal", `✓ <b>${esc(file)}</b> 파일을 내려받았어요. 선생님이 알려 준 곳에 이 파일을 올려 주세요.<br>다음 시간에 이어 쓰려면 이 파일을 <b>📂 지난 제출 파일 불러오기</b>로 다시 열면 돼요.`);
-    renderTabs(); renderState(no);
-  } catch (e) {
-    console.error(e);
-    msg.innerHTML = bubble("amber", "파일을 만들지 못했어요. 브라우저가 내려받기를 막았을 수 있어요. 다른 브라우저(크롬·엣지)로 다시 해 보거나 선생님께 알려 주세요.");
-  }
+  makePdf(L, sid, name, missing.length, msg);
 }
 
 function markBlanks(L, missing) {
   const miss = new Set(missing.map((m) => m.k));
   $(`#page${L.no}`).querySelectorAll("[data-k]").forEach((el) => el.classList.toggle("blank", miss.has(el.dataset.k)));
+  // 블록 이름 칸이 비었으면 캡처 상자도 함께 노랗게 (둘 중 하나만 하면 되므로)
+  L.sections.forEach((S) => S.fields.forEach((F) => F.type === "table" && F.cols.forEach((c, ci) => {
+    if (c.orImage) $(`#box_${c.orImage}`)?.classList.toggle("blank", F.rows.some((r, ri) => miss.has(`${F.id}:${ri}:${ci}`)));
+  })));
+}
+
+// ───────── 캡처 붙이기 ─────────
+function showImage(id) {
+  const img = $(`#img_${id}`), clr = $(`[data-clear="${id}"]`);
+  if (!img) return;
+  img.hidden = !A[id];
+  if (A[id]) img.src = A[id]; else img.removeAttribute("src");
+  clr.hidden = !A[id];
+}
+function changed(k) {
+  const no = lessonOfKey(k);
+  if (submitted[no] && !dirty[no]) { dirty[no] = true; renderTabs(); }
+  delete $(`#msg${no}`).dataset.confirm; // 고쳤으면 제출 전에 빈칸을 다시 알려 준다
+  renderState(no);
+}
+// 큰 캡처는 가로 1400px 안으로 줄이고 JPEG로 바꿔 파일을 가볍게 한다
+async function setImage(id, file) {
+  const note = $(`#imsg_${id}`);
+  try {
+    if (!file || !file.type.startsWith("image/")) throw new Error("그림이 아님");
+    const url = URL.createObjectURL(file);
+    const im = await new Promise((ok, no) => { const x = new Image(); x.onload = () => ok(x); x.onerror = no; x.src = url; });
+    const scale = Math.min(1, 1400 / im.naturalWidth);
+    const cv = Object.assign(document.createElement("canvas"), { width: Math.round(im.naturalWidth * scale), height: Math.round(im.naturalHeight * scale) });
+    const g = cv.getContext("2d");
+    g.fillStyle = "#fff"; g.fillRect(0, 0, cv.width, cv.height); g.drawImage(im, 0, 0, cv.width, cv.height);
+    URL.revokeObjectURL(url);
+    A[id] = cv.toDataURL("image/jpeg", 0.9);
+    showImage(id);
+    note.innerHTML = "";
+    const L = LESSONS.find((x) => x.no === lessonOfKey(id));
+    if ($(`#page${L.no} .blank`)) markBlanks(L, slotsOf(L).filter((s) => s.need && !filled(A[s.k])));
+    changed(id);
+  } catch (e) {
+    console.error(e);
+    note.innerHTML = bubble("amber", "그림을 붙이지 못했어요. 캡처(Win + Shift + S)를 한 뒤 점선 상자를 누르고 Ctrl + V 해 보세요. 안 되면 [그림 파일 고르기]로 저장한 그림을 골라 주세요.");
+  }
+}
+function imageFromClipboard(e) {
+  for (const it of e.clipboardData?.items || []) if (it.type.startsWith("image/")) return it.getAsFile();
+  return null;
+}
+
+// ───────── 제출 PDF 만들기 ─────────
+// 제출용 글을 화면 밖에 따로 그린 뒤(html2canvas) A4 쪽에 차례로 붙인다(jsPDF).
+// jsPDF 기본 글꼴은 한글을 못 쓰므로 글도 그림으로 넣는다. 파일 끝에 이어 쓰기용 답(JSON)을 숨겨 둔다.
+const DATA_MARK = "%MBAI-DATA:";
+const loaded = {};
+function loadScript(src) {
+  return loaded[src] ||= new Promise((ok, no) => {
+    const sc = Object.assign(document.createElement("script"), { src, onload: ok, onerror: () => { delete loaded[src]; no(new Error(src)); } });
+    document.head.appendChild(sc);
+  });
+}
+const nowStamp = () => { const d = new Date(), z = (n) => String(n).padStart(2, "0"); return `${d.getFullYear()}-${z(d.getMonth() + 1)}-${z(d.getDate())} ${z(d.getHours())}:${z(d.getMinutes())}`; };
+const val = (k) => (A[k] || "").toString().trim();
+const ansHTML = (v) => v ? esc(v) : '<span class="none">(빈칸)</span>';
+
+function reportBlocks(L, sid, name, stamp, blanks) {
+  const blocks = [`<div class="rp-block"><h1>[마이크로비트 AI 탐구] ${esc(tabName(L))} — ${esc(L.title)}</h1>
+    <div class="meta">학번 <b>${esc(sid)}</b> · 이름 <b>${esc(name)}</b> · 제출 ${esc(stamp)} · 빈칸 ${blanks}개</div></div>`];
+  L.sections.forEach((S) => {
+    const parts = S.fields.map((F) => {
+      if (F.type === "text") return `<div class="qq">${esc(F.label)}</div><div class="aa">${ansHTML(val(F.id))}</div>`;
+      if (F.type === "final") return `<div class="qq">🎯 ${esc(F.text)}</div><div style="color:#475569;font-size:13px">${esc(F.frame)}</div><div class="aa">${ansHTML(val(F.id))}</div>`;
+      if (F.type === "fill") return `<div class="qq">${esc(F.title)}</div><div class="aa">${esc(fillText(F))}</div>`;
+      if (F.type === "checks") return `<div class="qq">${esc(F.label)}</div>${F.items.map((it, i) => `<div>${A[`${F.id}:${i}`] ? "☑" : "☐"} ${esc(it)}</div>`).join("")}`;
+      if (F.type === "image") return `<div class="qq">${esc(F.label)}</div>${A[F.id] ? `<img src="${A[F.id]}">` : '<div class="aa"><span class="none">(붙이지 않음)</span></div>'}`;
+      if (F.type === "table") return `${F.label ? `<div class="qq">${esc(F.label)}</div>` : ""}<table><thead><tr>${F.cols.map((c) => `<th>${esc(c.h)}</th>`).join("")}</tr></thead><tbody>${
+        F.rows.map((r, ri) => `<tr>${r.map((v, ci) => v !== null ? `<td class="${ci === 0 ? "fx" : ""}">${esc(v)}</td>` : `<td>${!val(`${F.id}:${ri}:${ci}`) && F.cols[ci].orImage && A[F.cols[ci].orImage] ? '<span style="color:#64748B">(아래 캡처 참고)</span>' : ansHTML(val(`${F.id}:${ri}:${ci}`))}</td>`).join("")}</tr>`).join("")}</tbody></table>`;
+      return "";
+    }).join("");
+    blocks.push(`<div class="rp-block"><h2>${esc(S.num)} ${esc(S.title)}</h2>${parts}</div>`);
+  });
+  return blocks;
+}
+
+const toB64 = (str) => { const b = new TextEncoder().encode(str); let r = ""; for (let i = 0; i < b.length; i += 0x8000) r += String.fromCharCode(...b.subarray(i, i + 0x8000)); return btoa(r); };
+const fromB64 = (b64) => new TextDecoder().decode(Uint8Array.from(atob(b64), (c) => c.charCodeAt(0)));
+
+async function makePdf(L, sid, name, blanks, msg) {
+  const btn = $(`#submit${L.no} [data-submit]`);
+  btn.disabled = true;
+  msg.innerHTML = bubble("slate", "📄 PDF를 만들고 있어요… 몇 초만 기다려 주세요.");
+  const wrap = document.createElement("div");
+  try {
+    await Promise.all([loadScript("vendor/html2canvas.min.js"), loadScript("vendor/jspdf.umd.min.js")]);
+    const stamp = nowStamp();
+    wrap.className = "rp-wrap";
+    wrap.innerHTML = `<div class="rp">${reportBlocks(L, sid, name, stamp, blanks).join("")}</div>`;
+    document.body.appendChild(wrap);
+    await Promise.all([...wrap.querySelectorAll("img")].map((im) => im.decode().catch(() => {})));
+
+    const { jsPDF } = window.jspdf;
+    const pdf = new jsPDF({ unit: "mm", format: "a4" });
+    const M = 10, W = 190, H = 277;   // 여백 10mm, 쓸 수 있는 폭·높이
+    let y = M;
+    for (const block of wrap.querySelectorAll(".rp-block")) {
+      const cv = await html2canvas(block, { scale: 2, backgroundColor: "#ffffff", logging: false });
+      const pxPerMm = cv.width / W;
+      let top = 0;
+      while (top < cv.height) {
+        const room = (M + H - y) * pxPerMm;
+        const rest = cv.height - top;
+        // 남은 자리가 좁거나, 다음 쪽에 통째로 들어가는 덩어리면 새 쪽에서 시작한다
+        if (y > M && (room < 30 * pxPerMm || (top === 0 && rest > room && rest <= H * pxPerMm))) { pdf.addPage(); y = M; continue; }
+        const slice = Math.min(rest, room);
+        const part = Object.assign(document.createElement("canvas"), { width: cv.width, height: Math.ceil(slice) });
+        part.getContext("2d").drawImage(cv, 0, top, cv.width, slice, 0, 0, cv.width, slice);
+        pdf.addImage(part.toDataURL("image/jpeg", 0.9), "JPEG", M, y, W, slice / pxPerMm);
+        y += slice / pxPerMm; top += slice;
+        if (top < cv.height) { pdf.addPage(); y = M; }
+      }
+      y += 2;
+    }
+    const pages = pdf.getNumberOfPages();
+    for (let i = 1; i <= pages; i++) { pdf.setPage(i); pdf.setFontSize(9); pdf.setTextColor(148); pdf.text(`${i} / ${pages}`, 105, 292, { align: "center" }); }
+
+    // 이어 쓰기용 답을 PDF 끝에 붙인다. 주석(%)이라 PDF를 볼 때는 보이지 않는다.
+    // 끝에 startxref·%%EOF를 한 번 더 적어, PDF 프로그램이 파일 끝에서 원래 목차 위치를 그대로 찾게 한다.
+    const mine = {};
+    Object.keys(A).forEach((k) => { if (lessonOfKey(k) === L.no && (filled(A[k]) || A[k] === false)) mine[k] = A[k]; });
+    const bytes = new Uint8Array(pdf.output("arraybuffer"));
+    const tail = new TextDecoder("latin1").decode(bytes.subarray(Math.max(0, bytes.length - 200)));
+    const xref = (tail.match(/startxref\s+(\d+)/g) || []).pop()?.match(/\d+/)[0];
+    if (!xref) throw new Error("PDF 목차 위치를 찾지 못함");
+    const extra = `\n${DATA_MARK}${toB64(JSON.stringify({ app: APP, v: 2, lesson: L.no, sid, name, at: stamp, answers: mine }))}\nstartxref\n${xref}\n%%EOF\n`;
+    const blob = new Blob([bytes, extra], { type: "application/pdf" });
+
+    const file = `${sid}_${name}_${tabName(L)}.pdf`.replace(/[\\/:*?"<>|\s]+/g, "_");
+    const url = URL.createObjectURL(blob);
+    const a = Object.assign(document.createElement("a"), { href: url, download: file });
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 10 * 60000);
+    submitted[L.no] = stamp.slice(11); dirty[L.no] = false;
+    msg.innerHTML = bubble("teal", `✓ <b>${esc(file)}</b> (${pages}쪽)을 내려받았어요. 선생님이 알려 준 곳에 이 PDF를 올려 주세요.<br>
+      <a href="${url}" target="_blank" rel="noopener">방금 만든 PDF 열어 보기</a> · 다음 시간에 이어 쓰려면 이 PDF를 <b>📂 지난 제출 파일 불러오기</b>로 다시 열면 돼요.`);
+    renderTabs(); renderState(L.no);
+  } catch (e) {
+    console.error(e);
+    msg.innerHTML = bubble("amber", "PDF를 만들지 못했어요. 한 번 더 눌러 보세요. 계속 안 되면 크롬이나 엣지로 열어 다시 해 보고, 그래도 안 되면 선생님께 알려 주세요.");
+  } finally {
+    wrap.remove();
+    btn.disabled = false;
+  }
 }
 
 // ───────── 지난 파일 불러오기 ─────────
@@ -522,9 +685,18 @@ async function loadFiles(files) {
   const ok = [], bad = [];
   for (const f of files) {
     try {
-      const text = await f.text();
-      const i = text.indexOf(MARK);
-      const data = JSON.parse(i >= 0 ? text.slice(i + MARK.length).trim() : text);
+      let data;
+      const head = new TextDecoder("latin1").decode(new Uint8Array(await f.slice(0, 5).arrayBuffer()));
+      if (head === "%PDF-") {
+        const all = new TextDecoder("latin1").decode(new Uint8Array(await f.arrayBuffer()));
+        const i = all.lastIndexOf(DATA_MARK);
+        if (i < 0) throw new Error("이 앱의 PDF가 아님");
+        data = JSON.parse(fromB64(all.slice(i + DATA_MARK.length, all.indexOf("\n", i)).trim()));
+      } else {
+        const text = await f.text();
+        const i = text.indexOf(MARK);
+        data = JSON.parse(i >= 0 ? text.slice(i + MARK.length).trim() : text);
+      }
       if (data.app !== APP || !data.answers) throw new Error("다른 앱의 파일");
       Object.assign(A, data.answers);
       if (!$("#sid").value && data.sid) $("#sid").value = data.sid;
@@ -539,7 +711,7 @@ async function loadFiles(files) {
   fillInputs(); renderRefs(); LESSONS.forEach((L) => renderState(L.no));
   $("#topMsg").innerHTML =
     (ok.length ? bubble("teal", `📂 <b>${esc(ok.join(", "))}</b> 내용을 불러왔어요. 이어서 쓰면 돼요.`) : "") +
-    (bad.length ? bubble("amber", `<b>${esc(bad.join(", "))}</b>은(는) 이 앱에서 제출한 파일이 아니거나 내용이 바뀌어서 읽지 못했어요. 제출할 때 받은 .txt 파일 그대로 골라 주세요.`) : "");
+    (bad.length ? bubble("amber", `<b>${esc(bad.join(", "))}</b>은(는) 이 앱에서 제출한 파일이 아니거나 내용이 바뀌어서 읽지 못했어요. 제출할 때 받은 PDF 파일 그대로 골라 주세요.`) : "");
 }
 
 const bubble = (tone, html) => `<div class="bubble ${tone}" role="status">${html}</div>`;
@@ -554,12 +726,32 @@ document.addEventListener("input", (e) => {
   A[k] = e.target.type === "checkbox" ? e.target.checked : e.target.value;
   e.target.classList.remove("blank");
   if (e.target.tagName === "TEXTAREA") grow(e.target);
-  const no = lessonOfKey(k);
-  if (submitted[no] && !dirty[no]) { dirty[no] = true; renderTabs(); }
-  delete $(`#msg${no}`).dataset.confirm; // 고쳤으면 제출 전에 빈칸을 다시 알려 준다
-  renderState(no);
+  changed(k);
 });
+document.addEventListener("paste", (e) => {
+  const drop = document.activeElement?.closest?.("[data-drop]");
+  if (!drop) return;
+  const file = imageFromClipboard(e);
+  e.preventDefault();
+  if (file) setImage(drop.dataset.drop, file);
+  else $(`#imsg_${drop.dataset.drop}`).innerHTML = bubble("amber", "붙여 넣을 그림이 없어요. 먼저 Win + Shift + S로 화면을 캡처한 뒤 다시 Ctrl + V 해 보세요.");
+});
+document.addEventListener("dragover", (e) => { const d = e.target.closest?.("[data-drop]"); if (d) { e.preventDefault(); d.classList.add("over"); } });
+document.addEventListener("dragleave", (e) => { e.target.closest?.("[data-drop]")?.classList.remove("over"); });
+document.addEventListener("drop", (e) => {
+  const d = e.target.closest?.("[data-drop]"); if (!d) return;
+  e.preventDefault(); d.classList.remove("over");
+  setImage(d.dataset.drop, e.dataTransfer.files[0]);
+});
+document.addEventListener("change", (e) => {
+  const id = e.target.dataset?.file; if (!id) return;
+  if (e.target.files[0]) setImage(id, e.target.files[0]);
+  e.target.value = "";
+});
+document.addEventListener("keydown", (e) => { const d = e.target.closest?.("[data-drop]"); if (d && (e.key === "Enter" || e.key === " ")) { e.preventDefault(); $(`[data-file="${d.dataset.drop}"]`).click(); } });
 document.addEventListener("click", (e) => {
+  const pick = e.target.closest("[data-pick]"); if (pick) { $(`[data-file="${pick.dataset.pick}"]`).click(); return; }
+  const clr = e.target.closest("[data-clear]"); if (clr) { delete A[clr.dataset.clear]; showImage(clr.dataset.clear); changed(clr.dataset.clear); return; }
   const t = e.target.closest("[data-tab],[data-submit],[data-goblank]"); if (!t) return;
   if (t.dataset.tab) show(Number(t.dataset.tab));
   if (t.dataset.submit) { if (t.closest(".bubble")) $(`#msg${t.dataset.submit}`).dataset.confirm = "1"; submit(Number(t.dataset.submit)); }
