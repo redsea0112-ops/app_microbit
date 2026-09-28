@@ -182,16 +182,16 @@ const LESSONS = [
           rows: [
             ["입력", "가속도센서로 움직임의 크기(가속도 크기)를 잰다"],
             ["처리", "잰 값을 내가 정한 기준값 두 개와 비교해 가만히 있기·걷기·뛰기 가운데 하나로 판단한다"],
-            ["출력", "판단한 동작에 따라 아이콘과 소리를 다르게 출력한다 (아래 표)"],
+            ["출력", "판단한 동작에 따라 아이콘과 소리를 다르게 출력한다 (아래 수행과제)"],
           ] },
-        { type: "table", id: "l1_outspec", label: "🧩 함께 만드는 프로그램 — 동작에 따라 아이콘과 소리를 다르게 출력", cols: [{ h: "동작" }, { h: "출력" }], rows: [["뛰기", "하트 아이콘"], ["가만히 있기", "화면 지우기"], ["걷기", "위쪽 화살표와 짧은 소리"]] },
+        { type: "table", id: "l1_task", label: "📝 수행과제 — 함께 만드는 첫 프로그램: 동작에 따라 아이콘과 소리를 다르게 출력하는 프로그램을 만들고, 된 것에 ‘완성’을 고르세요.", cols: [{ h: "동작" }, { h: "출력" }, { h: "완성했나요?", options: ["완성", "아직"] }], rows: [["뛰기", "하트 아이콘", null], ["가만히 있기 시작", "화면 지우기", null], ["걷기", "위쪽 화살표와 짧은 소리", null]] },
         { type: "fill", id: "l1_rule3", title: "✏️ 내가 정한 규칙",
           lines: [["만약 가속도 크기가 ", { k: "a", ph: "기준값 1" }, " 보다 크면 → 뛰기"],
                   ["아니면 만약 가속도 크기가 ", { k: "b", ph: "기준값 2" }, " 보다 크면 → 걷기"],
                   ["아니면 → 가만히 있기"]] },
         { type: "tip", text: "걷는 중인데 아이콘이 '가만히 있기'와 '걷기'로 자꾸 바뀌나요? 발을 딛는 순간에만 값이 커지기 때문이에요. 아이콘을 보여 준 뒤 [일시중지 (ms) 500] 블록을 넣어 보고, 왜 그런지 ④ 실험에서 살펴보세요." },
-        { type: "image", id: "l1_code", optional: true, label: "📸 내 프로그램 캡처 붙이기",
-          hint: "코딩한 MakeCode 프로그램을 캡처해 붙여 두면 2차시에 비교할 때 도움이 돼요." },
+        { type: "image", id: "l1_code", label: "📸 수행과제 결과 캡처 붙이기",
+          hint: "완성한 MakeCode 프로그램을 캡처해 붙이세요. 수행과제를 했다는 증거가 되고, 2차시에 비교할 때도 도움이 돼요." },
       ] },
       { num: "④", title: "실험하기", time: "10분",
         intro: "내가 정한 기준값으로 동작마다 10번씩 해 보고, 마이크로비트가 몇 번 맞게 판단했는지 세어 봅시다. 마이크로비트를 차는 위치도 바꿔 보세요. 2차시에 인공지능으로 같은 동작을 시험해 비교할 거예요.",
@@ -244,9 +244,9 @@ const LESSONS = [
       { num: "⑤", title: "프로그램에 연결하기", time: "4분",
         intro: "1차시 ③과 똑같이, CreateAI가 알아본 동작에 따라 아이콘과 소리를 다르게 출력하도록 MakeCode에서 만들어 봅시다.",
         fields: [
-          { type: "table", id: "l2_outspec", label: "🧩 함께 만드는 프로그램 — 동작에 따라 아이콘과 소리를 다르게 출력", cols: [{ h: "동작" }, { h: "출력" }], rows: [["뛰기", "하트 아이콘"], ["가만히 있기", "화면 지우기"], ["걷기", "위쪽 화살표와 짧은 소리"]] },
-          { type: "image", id: "l2_code", optional: true, label: "📸 MakeCode 프로그램 캡처 붙이기",
-            hint: "CreateAI가 알아본 동작에 따라 출력하도록 만든 블록을 캡처해 붙여 보세요." },
+          { type: "table", id: "l2_task", label: "📝 수행과제 — 함께 만드는 첫 프로그램: 동작에 따라 아이콘과 소리를 다르게 출력하는 프로그램을 만들고, 된 것에 ‘완성’을 고르세요.", cols: [{ h: "동작" }, { h: "출력" }, { h: "완성했나요?", options: ["완성", "아직"] }], rows: [["뛰기", "하트 아이콘", null], ["가만히 있기 시작", "화면 지우기", null], ["걷기", "위쪽 화살표와 짧은 소리", null]] },
+          { type: "image", id: "l2_code", label: "📸 수행과제 결과 캡처 붙이기",
+            hint: "CreateAI가 알아본 동작에 따라 출력하도록 만든 MakeCode 프로그램을 캡처해 붙이세요." },
         ] },
       { num: "⑥", title: "두 방법 비교하기", time: "9분", fields: [
         { type: "ref", title: "📋 내 기록 다시 보기 (1차시 실험 · 오늘 시험 결과)", show: ["l1_rule3", "l1_exp5", "l2_test3"] },
@@ -360,7 +360,7 @@ function slotsOf(L) {
     }));
     if (F.type === "fill") F.lines.forEach((ln) => ln.forEach((p) => { if (typeof p === "object") out.push({ k: `${F.id}:${p.k}`, need: true, where: `${S.num} ${S.title}` }); }));
     if (F.type === "checks") F.items.forEach((_, i) => out.push({ k: `${F.id}:${i}`, need: false }));
-    if (F.type === "image") out.push({ k: F.id, need: false });
+    if (F.type === "image") out.push({ k: F.id, need: !F.optional, where: `${S.num} ${S.title}` });
   }));
   return out;
 }
@@ -533,6 +533,7 @@ function submit(no) {
 function markBlanks(L, missing) {
   const miss = new Set(missing.map((m) => m.k));
   $(`#page${L.no}`).querySelectorAll("[data-k]").forEach((el) => el.classList.toggle("blank", miss.has(el.dataset.k)));
+  $(`#page${L.no}`).querySelectorAll(".imgbox").forEach((b) => b.classList.toggle("blank", miss.has(b.id.slice(4)))); // 빠진 캡처
   // 블록 이름 칸이 비었으면 캡처 상자도 함께 노랗게 (둘 중 하나만 하면 되므로)
   L.sections.forEach((S) => S.fields.forEach((F) => F.type === "table" && F.cols.forEach((c, ci) => {
     if (c.orImage) $(`#box_${c.orImage}`)?.classList.toggle("blank", F.rows.some((r, ri) => miss.has(`${F.id}:${ri}:${ci}`)));
