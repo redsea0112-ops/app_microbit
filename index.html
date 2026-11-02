@@ -197,7 +197,8 @@ const LESSONS = [
           lines: [["만약 가속도 크기가 ", { k: "a", ph: "기준값 1" }, " 보다 크면 → 뛰기"],
                   ["아니면 만약 가속도 크기가 ", { k: "b", ph: "기준값 2" }, " 보다 크면 → 걷기"],
                   ["아니면 → 가만히 있기"]] },
-        { type: "tip", text: "걷는 중인데 아이콘이 '가만히 있기'와 '걷기'로 자꾸 바뀌나요? 발을 딛는 순간에만 값이 커지기 때문이에요. 아이콘을 보여 준 뒤 [일시중지 (ms) 500] 블록을 넣어 보고, 왜 그런지 ④ 실험에서 살펴보세요." },
+        { type: "code", title: "블록 ② — 내가 정한 규칙 + 수행과제", lead: "위 규칙과 수행과제를 블록으로 만들면 이렇게 돼요. [ 기준값 1 ], [ 기준값 2 ] 자리에는 내가 정한 숫자를 넣어요.", steps: [], code: "무한반복 실행\n    만약 ( 가속도센서 값(mg) 크기 > [ 기준값 1 ] ) 이면\n        아이콘 출력 ( 하트 )\n    아니면 만약 ( 가속도센서 값(mg) 크기 > [ 기준값 2 ] ) 이면\n        화살표 출력 ( 위쪽 )\n        음 출력 ( 가운데 도, 1/4 박자 )\n    아니면\n        LED 스크린 지우기\n    일시중지 500 ms" },
+        { type: "tip", text: "걷는 중인데 아이콘이 '가만히 있기'와 '걷기'로 자꾸 바뀌나요? 발을 딛는 순간에만 값이 커지기 때문이에요. 블록 ②의 [일시중지 500 ms]는 아이콘을 읽을 수 있게 잠깐 멈추는 블록이에요. 왜 자꾸 바뀌는지는 ④ 실험에서 살펴보세요." },
         { type: "image", id: "l1_code", label: "📸 수행과제 결과 캡처 붙이기",
           hint: "완성한 MakeCode 프로그램을 캡처해 붙이세요. 수행과제를 했다는 증거가 되고, 2차시에 비교할 때도 도움이 돼요." },
       ] },
@@ -409,7 +410,8 @@ function fieldHTML(F) {
     <img class="shot" id="img_${F.id}" alt="${esc(F.label)}" hidden>
     <div id="imsg_${F.id}"></div></div>`;
   if (F.type === "code") return `<div class="codebox"><div class="h">${esc(F.title)}</div>
-    <ol>${F.steps.map((x) => `<li>${esc(x)}</li>`).join("")}</ol>
+    ${F.lead ? `<p style="margin:4px 0;font-size:14px">${esc(F.lead)}</p>` : ""}
+    ${F.steps.length ? `<ol>${F.steps.map((x) => `<li>${esc(x)}</li>`).join("")}</ol>` : ""}
     <pre><code>${esc(F.code)}</code></pre></div>`;
   if (F.type === "ref") return `<details class="ref" data-ref="${F.show.join(",")}"${F.open ? " open" : ""}><summary>${esc(F.title)}</summary><div class="ref-body"></div></details>`;
   return "";
