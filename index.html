@@ -255,6 +255,7 @@ const LESSONS = [
         intro: "1차시 ③과 똑같이, CreateAI가 알아본 동작에 따라 아이콘과 소리를 다르게 출력하도록 MakeCode에서 만들어 봅시다.",
         fields: [
           { type: "table", id: "l2_task", label: "📝 수행과제 — 함께 만드는 첫 프로그램: 동작에 따라 아이콘과 소리를 다르게 출력하는 프로그램을 만들고, 된 것에 ‘완성’을 고르세요.", cols: [{ h: "동작" }, { h: "출력" }, { h: "완성했나요?", options: ["완성", "아직"] }], rows: [["뛰기", "하트 아이콘", null], ["가만히 있기 시작", "화면 지우기", null], ["걷기", "위쪽 화살표와 짧은 소리", null]] },
+          { type: "code", title: "블록 ③ — CreateAI가 알아본 동작에 따라 출력하기", lead: "CreateAI에서 학습시킨 모델을 MakeCode로 가져오면 ‘ML ○○ 시작 시’ 블록이 생겨요. ○○에는 CreateAI에서 붙인 분류 이름(running·walking·stopping)이 나와요. 아래처럼 만들어요.", steps: [], code: "ML ( running ) 시작 시\n    아이콘 출력 ( 하트 )\n    ( 도 ) (Hz) 소리 내기\n    모든 소리 끄기\nML ( walking ) 시작 시\n    아이콘 출력 ( 막대 사람 )\n    ( 레 ) (Hz) 소리 내기\n    모든 소리 끄기\nML ( stopping ) 시작 시\n    아이콘 출력 ( 해골 )\n    ( 미 ) (Hz) 소리 내기\n    모든 소리 끄기" },
           { type: "image", id: "l2_code", label: "📸 수행과제 결과 캡처 붙이기",
             hint: "CreateAI가 알아본 동작에 따라 출력하도록 만든 MakeCode 프로그램을 캡처해 붙이세요." },
         ] },
