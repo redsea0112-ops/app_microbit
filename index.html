@@ -103,8 +103,8 @@
   .codebox { border:1px solid var(--teal-line); border-radius:10px; background:#F8FFFD; padding:10px 14px; margin:10px 0; }
   .codebox .h { font-weight:700; color:var(--teal); }
   .codebox ol { margin:6px 0; padding-left:22px; font-size:14px; }
-  .codebox pre { background:#0F172A; color:#E2E8F0; border-radius:8px; padding:10px 12px; overflow-x:auto; font-size:13px; line-height:1.5; margin:6px 0; }
-  .codebox code { font-family:Consolas,"D2Coding",monospace; }
+  .codebox pre { background:#fff; color:var(--slate); border:1px solid var(--line); border-radius:8px; padding:10px 14px; overflow-x:auto; font-size:14px; line-height:1.7; margin:6px 0; }
+  .codebox code { font-family:"맑은 고딕","Malgun Gothic",sans-serif; white-space:pre; }
   .imgbox { margin:12px 0; }
   .drop { border:2px dashed var(--teal-line); border-radius:10px; background:#FAFFFE; color:var(--teal); text-align:center;
           padding:18px 12px; cursor:pointer; font-size:14px; }
@@ -172,14 +172,14 @@ const LESSONS = [
         { type: "text", id: "l1_think3", rows: 3, label: "마이크로비트는 내 다리를 볼 수 있을까요? 내가 멈춰 있는지, 걷는지, 뛰는지를 무엇으로 알 수 있을지 내 생각을 적어 봅시다." },
       ] },
       { num: "②", title: "가속도 크기 재기", time: "10분",
-        intro: "아래 측정 코드를 마이크로비트에 넣고, 가만히 있기·걷기·뛰기를 할 때 <b>[가속도(mg) 크기]</b>의 가장 작은 값과 가장 큰 값을 재어 적어 봅시다.",
+        intro: "아래 블록 ①을 만들어 마이크로비트에 넣고, 가만히 있기·걷기·뛰기를 할 때 <b>가속도 크기</b>의 가장 작은 값과 가장 큰 값을 재어 적어 봅시다.",
         tips: [
           "가만히 있어도 약 1000 정도가 나와요. 지구가 당기는 힘(중력)도 함께 재기 때문이에요.",
           "버튼을 누를 때는 마이크로비트를 세게 흔들지 마세요. 누르는 움직임도 값으로 재요.",
-          "USB로 연결한 채로 해 보면, MakeCode에서 마이크로비트를 연결한 뒤 시뮬레이터 아래의 ‘데이터 표시 장치 구성’ 단추를 눌러 값이 움직이는 모습을 그래프로 볼 수 있어요. (‘데이터 표시 시뮬레이터’는 가짜 값이라 쓰지 않아요.)",
+          "값이 움직이는 모습을 보고 싶다면? 무한반복 안에 [시리얼] 분류의 '값 출력' 블록으로 크기를 보내고, USB로 연결한 채 시뮬레이터 아래의 '데이터 표시 장치 구성' 단추를 누르면 그래프로 보여요. ('데이터 표시 시뮬레이터'는 가짜 값이라 쓰지 않아요.)",
         ],
         fields: [
-          { type: "code", title: "🧪 가속도 크기 측정 코드", steps: ["MakeCode(makecode.microbit.org)에서 새 프로젝트를 만들고, 위쪽의 ‘JavaScript’를 눌러 아래 코드를 모두 붙여 넣어요. ‘블록’으로 돌아가면 블록으로 바뀐 것을 볼 수 있어요. 마이크로비트에 다운로드해요.", "A와 B를 함께 눌러 기록을 지워요(✓가 잠깐 보여요).", "한 동작(가만히 있기 / 걷기 / 뛰기)을 10초 동안 해요.", "A를 누르면 가장 큰 값, B를 누르면 가장 작은 값이 흘러가요. 표에 적어요.", "다음 동작을 하기 전에 다시 A와 B를 함께 눌러 기록을 지워요."], code: "// 가속도 크기 측정 프로그램\n// A+B: 기록 지우기 / A: 가장 큰 값 보기 / B: 가장 작은 값 보기\nlet strength = 0\nlet biggest = 0\nlet smallest = 5000\ninput.onButtonPressed(Button.AB, function () {\n    biggest = 0\n    smallest = 5000\n    basic.showIcon(IconNames.Yes)\n    basic.clearScreen()\n})\ninput.onButtonPressed(Button.A, function () {\n    basic.showNumber(biggest)\n})\ninput.onButtonPressed(Button.B, function () {\n    basic.showNumber(smallest)\n})\nbasic.forever(function () {\n    strength = input.acceleration(Dimension.Strength)\n    serial.writeValue(\"strength\", strength)\n    if (strength > biggest) {\n        biggest = strength\n    }\n    if (strength < smallest) {\n        smallest = strength\n    }\n    basic.pause(20)\n})" },
+          { type: "code", title: "블록 ① — 가속도 크기 재기", steps: ["메이크코드에서 변수 세 개(크기, 가장큰값, 가장작은값)를 만들고, 블록 ①을 그대로 만들어 마이크로비트에 내려받아요.", "A와 B를 함께 눌러 기록을 지워요(✓가 보여요).", "한 동작(가만히 있기 / 걷기 / 뛰기)을 10초 동안 해요.", "A를 누르면 가장 큰 값, B를 누르면 가장 작은 값이 흘러가요. 표에 적어요.", "다음 동작을 하기 전에 다시 A와 B를 함께 눌러 기록을 지워요."], code: "시작하면 실행\n    ( 가장큰값 ) 에 0 저장\n    ( 가장작은값 ) 에 5000 저장\n무한반복 실행\n    ( 크기 ) 에 ( 가속도센서 값(mg) 크기 ) 저장\n    만약 ( 크기 > 가장큰값 ) 이면\n        ( 가장큰값 ) 에 ( 크기 ) 저장\n    만약 ( 크기 < 가장작은값 ) 이면\n        ( 가장작은값 ) 에 ( 크기 ) 저장\nA 버튼 누르면 실행\n    수 출력 ( 가장큰값 )\nB 버튼 누르면 실행\n    수 출력 ( 가장작은값 )\nA+B 버튼 누르면 실행\n    ( 가장큰값 ) 에 0 저장\n    ( 가장작은값 ) 에 5000 저장\n    아이콘 출력 ( 체크 )" },
           { type: "table", id: "l1_obs4", cols: [{ h: "동작" }, { h: "가장 작은 값" }, { h: "가장 큰 값" }, { h: "값이 어떻게 변했나요?" }],
             rows: [["가만히 있기", null, null, null], ["걷기", null, null, null], ["뛰기", null, null, null]] },
         ] },
@@ -407,9 +407,7 @@ function fieldHTML(F) {
     <div id="imsg_${F.id}"></div></div>`;
   if (F.type === "code") return `<div class="codebox"><div class="h">${esc(F.title)}</div>
     <ol>${F.steps.map((x) => `<li>${esc(x)}</li>`).join("")}</ol>
-    <div class="row" style="justify-content:space-between"><span style="font-size:13px;color:var(--muted)">MakeCode → JavaScript 탭에 붙여 넣기</span>
-      <button class="btn small" type="button" data-copy="1">📋 코드 복사</button></div>
-    <pre><code>${esc(F.code)}</code></pre><div class="copymsg"></div></div>`;
+    <pre><code>${esc(F.code)}</code></pre></div>`;
   if (F.type === "ref") return `<details class="ref" data-ref="${F.show.join(",")}"${F.open ? " open" : ""}><summary>${esc(F.title)}</summary><div class="ref-body"></div></details>`;
   return "";
 }
@@ -768,14 +766,6 @@ document.addEventListener("change", (e) => {
 });
 document.addEventListener("keydown", (e) => { const d = e.target.closest?.("[data-drop]"); if (d && (e.key === "Enter" || e.key === " ")) { e.preventDefault(); $(`[data-file="${d.dataset.drop}"]`).click(); } });
 document.addEventListener("click", (e) => {
-  const cp = e.target.closest("[data-copy]");
-  if (cp) {
-    const box = cp.closest(".codebox"), note = $(".copymsg", box);
-    navigator.clipboard.writeText($("code", box).textContent)
-      .then(() => { note.innerHTML = bubble("teal", "복사했어요. MakeCode의 JavaScript 탭에 붙여 넣으세요."); })
-      .catch(() => { note.innerHTML = bubble("amber", "자동 복사가 안 됐어요. 코드 칸을 마우스로 끌어 고른 뒤 Ctrl + C로 복사하세요."); });
-    return;
-  }
   const pick = e.target.closest("[data-pick]"); if (pick) { $(`[data-file="${pick.dataset.pick}"]`).click(); return; }
   const clr = e.target.closest("[data-clear]"); if (clr) { delete A[clr.dataset.clear]; showImage(clr.dataset.clear); changed(clr.dataset.clear); return; }
   const t = e.target.closest("[data-tab],[data-submit],[data-goblank]"); if (!t) return;
